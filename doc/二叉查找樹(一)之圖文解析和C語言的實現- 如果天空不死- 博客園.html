@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)https://www.cnblogs.com/skywang12345/p/3576328.html -->
+<html lang="zh-TW" class="translated-ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin-when-crossorigin">
+    <meta name="description" content="概要 本章先对二叉树的相关理论知识进行介绍，然后给出C语言的详细实现。关于二叉树的学习，需要说明的是：它并不难，不仅不难，而且它非常简单。初次接触树的时候，我也觉得它似乎很难；而之所产生这种感觉主要是">
+    <meta property="og:description" content="概要 本章先对二叉树的相关理论知识进行介绍，然后给出C语言的详细实现。关于二叉树的学习，需要说明的是：它并不难，不仅不难，而且它非常简单。初次接触树的时候，我也觉得它似乎很难；而之所产生这种感觉主要是">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園</title>
+    <link id="favicon" rel="shortcut icon" href="https://common.cnblogs.com/favicon.svg" type="image/svg+xml">
+    
+    <link rel="stylesheet" href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/blog-common.min.css">
+    <link id="MainCss" rel="stylesheet" href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/bundle-blue.min.css">
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/bundle-blue-mobile.min.css">
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/skywang12345/rss">
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/skywang12345/rsd.xml">
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/skywang12345/wlwmanifest.xml">
+    <script src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/osd.js.下載"></script><script async="" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/analytics.js.下載"></script><script type="text/javascript" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/encoder.js.下載"></script><script>
+        var currentBlogId = 142383;
+        var currentBlogApp = 'skywang12345';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'blue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2014-03-27 09:43';
+        </script>
+    <script src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/jquery-2.2.0.min.js.下載"></script>
+    <script src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/blog-common.min.js.下載"></script><style type="text/css">.medium-zoom-overlay{position:fixed;top:0;right:0;bottom:0;left:0;opacity:0;transition:opacity .3s;will-change:opacity}.medium-zoom--opened .medium-zoom-overlay{cursor:pointer;cursor:zoom-out;opacity:1}.medium-zoom-image{cursor:pointer;cursor:zoom-in;transition:transform .3s cubic-bezier(.2,0,.2,1)!important}.medium-zoom-image--hidden{visibility:hidden}.medium-zoom-image--opened{position:relative;cursor:pointer;cursor:zoom-out;will-change:transform}</style>
+    
+    
+    
+<meta http-equiv="origin-trial" content="A+b/H0b8RPXNaJgaNFpO0YOFuGK6myDQXlwnJB3SwzvNMfcndat4DZYMrP4ClJIzYWo3/yP2S+8FTZ/lpqbPAAEAAABueyJvcmlnaW4iOiJodHRwczovL2ltYXNkay5nb29nbGVhcGlzLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzVGhpcmRQYXJ0eSI6dHJ1ZX0="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AxL6oBxcpn5rQDPKSAs+d0oxNyJYq2/4esBUh3Yx5z8QfcLu+AU8iFCXYRcr/CEEfDnkxxLTsvXPJFQBxHfvkgMAAACBeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A9KPtG5kl3oLTk21xqynDPGQ5t18bSOpwt0w6kGa6dEWbuwjpffmdUpR3W+faZDubGT+KIk2do0BX2ca16x8qAcAAACBeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A0OysezhLoCRYomumeYlubLurZTCmsjTb087OvtCy95jNM65cfEsbajrJnhaGwiTxhz38ZZbm+UhUwQuXfVPTg0AAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AxoOxdZQmIoA1WeAPDixRAeWDdgs7ZtVFfH2y19ziTgD1iaHE5ZGz2UdSjubkWvob9C5PrjUfkWi4ZSLgWk3Xg8AAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A7+rMYR5onPnACrz+niKSeFdH3xw1IyHo2AZSHmxrofRk9w4HcQPMYcpBUKu6OQ6zsdxf4m/vqa6tG6Na4OLpAQAAAB4eyJvcmlnaW4iOiJodHRwczovL2ltYXNkay5nb29nbGVhcGlzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AwfG8hAcHnPa/kJ1Co0EvG/K0F9l1s2JZGiDLt2mhC3QI5Fh4qmsmSwrWObZFbRC9ieDaSLU6lHRxhGUF/i9sgoAAACBeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AwQ7dCmHkvR6FuOFxAuNnktYSQrGbL4dF+eBkrwNLALc69Wr//PnO1yzns3pjUoCaYbKHtVcnng2hU+8OUm0PAYAAACHeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AysVDPGQTLD/Scn78x4mLwB1tMfje5jwUpAAzGRpWsr1NzoN7MTFhT3ClmImi2svDZA7V6nWGIV8YTPsSRTe0wYAAACHeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/pubads_impl_2021052001.js.下載" async=""></script><link rel="preload" href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/f.txt" as="script"><script type="text/javascript" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/f.txt"></script><link rel="preload" href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/f(1).txt" as="script"><script type="text/javascript" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/f(1).txt"></script><link rel="prefetch" href="https://39759ad17040ee9ceb20b5d390c5df14.safeframe.googlesyndication.com/safeframe/1-0-38/html/container.html"><link rel="prefetch" href="https://tpc.googlesyndication.com/safeframe/1-0-38/html/container.html"><link type="text/css" rel="stylesheet" charset="UTF-8" href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/translateelement.css"></head>
+<body class="has-navbar has-bannerbar">
+    <a name="top"></a>
+        <a target="_blank" href="https://www.cnblogs.com/cmt/p/14797594.html" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;aliyun-summit-blog-bannerbar-pc&#39;)">
+            <div class="bannerbar aliyun forpc" style="background-size: contain;filter: brightness(0.95);background-image: url(https://img2020.cnblogs.com/blog/35695/202105/35695-20210524164615697-1530638433.jpg)">
+            </div>
+        </a>
+        <div id="bannerbar" class="bannerbar-mobile formobile">
+            <a href="https://www.cnblogs.com/cmt/p/14797594.html" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;aliyun-summit-blog-bannerbar-mobile&#39;)">
+                <img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/35695-20210522072302481-117260882.jpg" alt="">
+            </a>
+        </div>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding"><a href="https://www.cnblogs.com/" title="開發者的網上家園"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/logo.svg" alt="博客園Logo"></a></li>
+                <li><a href="https://www.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-sitehome&#39;)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首頁</font></font></a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-news&#39;)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">新聞</font></font></a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-q&#39;)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">博問</font></font></a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-brands&#39;)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">專區</font></font></a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-ing&#39;)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">閃存</font></font></a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-edu&#39;)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">班級</font></font></a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代碼改變世界" type="text" tabindex="3">
+                        <button type="submit" id="zzk_search_button">
+                            <img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/search.svg" alt="搜索">
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="寫隨筆" title="寫隨筆" style="display: none;">
+                        <img id="new_post_icon" class="navbar-icon" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/newpost.svg" alt="寫隨筆">
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客" style="display: none;">
+                        <img id="myblog_icon" class="navbar-icon" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/myblog.svg" alt="我的博客">
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息" style="display: none;">
+                        <img id="msg_icon" class="navbar-icon" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/message.svg" alt="短消息">
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown" style="display: none;">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/avatar-default.svg" alt="用戶頭像">
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我的博客</font></font></a>
+                            <a href="https://home.cnblogs.com/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我的園子</font></font></a>
+                            <a href="https://account.cnblogs.com/settings/account"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">賬號設置</font></font></a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="簡潔模式會使用簡潔款皮膚顯示所有博客"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    簡潔模式 </font></font><img id="navbar_lite_mode_on" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/lite-mode-check.svg" class="hide"><span id="navbar_lite_mode_spinner" class="hide"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">...</font></font></span>
+</a>
+                            <a href="javascript:void(0)" onclick="account.logout();"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">退出登錄</font></font></a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/" style="display: inline;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">註冊</font></font></a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()" style="display: inline;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">登錄</font></font></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    <div class="pagelayout">
+    
+<div class="header">
+	<div>
+		<a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/skywang12345/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">skywang12345</font></font></a>
+
+	</div>
+	<div>
+		
+	</div>
+</div>
+
+
+    <div id="leftmenu" class="leftcolumn">
+        
+            
+<h1 class="listtitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">導航</font></font></h1>
+<ul class="list">
+			<li class="listitem"><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+博客園</font></font></a>
+</li>
+			<li class="listitem">
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/skywang12345/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+首頁</font></font></a>
+</li>
+			<li class="listitem">
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+新隨筆</font></font></a>
+</li>
+			<li class="listitem">
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E5%A6%82%E6%9E%9C%E5%A4%A9%E7%A9%BA%E4%B8%8D%E6%AD%BB"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+聯繫</font></font></a></li>
+			<li class="listitem">
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/skywang12345/rss/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+訂閱</font></font></a>
+<a id="blog_nav_rss_image" href="https://www.cnblogs.com/skywang12345/rss/">
+    <img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/xml.gif" alt="訂閱">
+</a></li>
+			<li class="listitem">
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+管理</font></font></a>
+</li>
+</ul>
+
+
+            <div id="blog-calendar" style="">
+
+<table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar" border="0">
+    <tbody>
+        <tr>
+            <td colspan="7">
+                <table class="CalTitle" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td class="CalNextPrev">
+                                <a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2021/04/26&#39;); return false;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&lt;</font></font></a>
+                            </td>
+                            <td align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2021年5月</font></font></td>
+                            <td align="right" class="CalNextPrev">
+                                <a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2021/06/26&#39;); return false;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&gt;</font></font></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    <tr>
+        <th class="CalDayHeader" align="center" abbr="日" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">日</font></font></th>
+        <th class="CalDayHeader" align="center" abbr="一" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">一</font></font></th>
+        <th class="CalDayHeader" align="center" abbr="二" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二</font></font></th>
+        <th class="CalDayHeader" align="center" abbr="三" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">三</font></font></th>
+        <th class="CalDayHeader" align="center" abbr="四" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">四</font></font></th>
+        <th class="CalDayHeader" align="center" abbr="五" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">五</font></font></th>
+        <th class="CalDayHeader" align="center" abbr="六" scope="col"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">六</font></font></th>
+    </tr>
+            <tr>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">25</font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">26</font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">27</font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">28</font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">29</font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">30</font></font></td>
+                    <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                        1
+                    </font></font></td>
+            </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            2
+                        </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                3
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                4
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                5
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                6
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                7
+                            </font></font></td>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            8
+                        </font></font></td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            9
+                        </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                10
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                11
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                12
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                13
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                14
+                            </font></font></td>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            15
+                        </font></font></td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            16
+                        </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                17
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                18
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                19
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                20
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                21
+                            </font></font></td>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            22
+                        </font></font></td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            23
+                        </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                24
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                25
+                            </font></font></td>
+                            <td class="CalTodayDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                26
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                27
+                            </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                28
+                            </font></font></td>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            29
+                        </font></font></td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            30
+                        </font></font></td>
+                            <td class="" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                31
+                            </font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                1
+                            </font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                2
+                            </font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                3
+                            </font></font></td>
+                            <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                4
+                            </font></font></td>
+                        <td class="CalOtherMonthDay" align="center"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            5
+                        </font></font></td>
+                </tr>
+    </tbody>
+</table></div><script>loadBlogDefaultCalendar();</script>
+            <div class="listtitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">統計</font></font></div>
+<ul class="list">
+	<li class="listitem"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">隨筆- 278</font></font></li>
+	<li class="listitem"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文章- 0</font></font></li>
+	<li class="listitem"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">評論- 1598</font></font></li>
+	<li class="listitem"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">閱讀- 
+ </font></font><span title="總閱讀數: 7307401"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+730萬</font></font></span></li>
+</ul>
+
+
+            
+<div id="sidebar_c3"></div>
+            <div id="blog-sidecolumn"><!-- 搜索 -->
+<div id="sidebar_search" class="sidebar-block">
+    <div id="sidebar_search" class="mySearch">
+        <h3 class="catListTitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">搜索</font></font></h3>
+        <div id="sidebar_search_box">
+            <div id="widget_my_zzk" class="div_my_zzk">
+                <input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<font style="vertical-align: inherit;"><font style="vertical-align: inherit;"><input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></font></font>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- 常用链接 -->
+<div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+常用鏈接
+</font></font></h3>
+<ul>
+    
+<li><a href="https://www.cnblogs.com/skywang12345/p/" title="我的博客的隨筆列表"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我的隨筆</font></font></a></li>
+<li><a href="https://www.cnblogs.com/skywang12345/MyComments.html" title="我的發表過的評論列表"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我的評論</font></font></a></li>
+<li><a href="https://www.cnblogs.com/skywang12345/OtherPosts.html" title="我評論過的隨筆列表"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我的參與</font></font></a></li>
+<li><a href="https://www.cnblogs.com/skywang12345/RecentComments.html" title="我的博客的評論列表"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最新評論</font></font></a></li>
+<li><a href="https://www.cnblogs.com/skywang12345/tag/" title="我的博客的標籤列表"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我的標籤</font></font></a></li>
+
+</ul>
+</div>
+
+<!-- 最新随笔 -->
+
+
+<!-- 我的标签 -->
+
+
+<!-- 积分与排名 -->
+
+
+<!-- 随笔分类、随笔档案、文章分类、新闻分类、相册、链接 -->
+<div id="sidebar_categories">
+
+    <h1 class="listtitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+        
+隨筆分類
+</font></font><span style="font-size:11px;font-weight:normal"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(275)</font></font></span>
+
+
+    </h1>
+    <ul class="list">
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/493848.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Android(7)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/482610.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Android NDK編程(9)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/490118.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Android 系統層(5)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/455318.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Android 應用層(46)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/476579.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Computer Culture(2)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/455711.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Java(111)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/481789.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Linux/Ubuntu(5)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/548620.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    UML(5)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/540303.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    Windows(1)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/548777.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    設計模式(1)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/508186.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    數據結構_算法(79)
+</font></font></a>
+ 
+
+            </li>            
+            <li class="listitem" data-category-list-item-visible="true" style="display: block">
+                
+<a href="https://www.cnblogs.com/skywang12345/category/489072.html" rel="" target=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+    索引(4)
+</font></font></a>
+ 
+
+            </li>            
+        
+    </ul>
+</div>
+
+<!-- 最新评论 -->
+<div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap" class="RecentComment">
+    <h3 class="catListTitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最新評論</font></font></h3>
+    <div class="RecentCommentBlock">
+        <ul>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/skywang12345/p/3509941.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1. Re:Java多線程系列--“JUC線程池”02之線程池原理(一)</font></font></a></li>
+                    <li class="recent_comment_body"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">不錯,點個贊!</font></font></p>
+</li>
+                    <li class="recent_comment_author"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">--真番茄雞蛋麵</font></font></li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/skywang12345/p/3577479.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2. Re:AVL樹(三)之Java的實現</font></font></a></li>
+                    <li class="recent_comment_body"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">贊一個</font></font></p>
+</li>
+                    <li class="recent_comment_author"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">--Honglixi</font></font></li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/skywang12345/p/3310887.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3. Re:Java 集合系列11之Hashtable詳細介紹(源碼解析)和使用示例</font></font></a></li>
+                    <li class="recent_comment_body"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">@BiuBiuBong 遍歷的效率比迭代器更高...</font></font></li>
+                    <li class="recent_comment_author"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">--Resta</font></font></li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/skywang12345/p/3245399.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">4. Re:紅黑樹(一)之原理和算法詳細介紹</font></font></a></li>
+                    <li class="recent_comment_body"><p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">瞎幾把寫</font></font></p>
+</li>
+                    <li class="recent_comment_author"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">--我想我是鳥</font></font></li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/skywang12345/p/3624291.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">5. Re:紅黑樹(四)之C++的實現</font></font></a></li>
+                    <li class="recent_comment_body"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">@漂泊於天邊的雲你把return 去掉即可，和前面的二叉搜索樹一樣的嘛...</font></font></li>
+                    <li class="recent_comment_author"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">--one-rabbit</font></font></li>
+        </ul>
+    </div>
+</div></div>
+
+
+<!-- 阅读排行榜 -->
+<div id="sidebar_topviewedposts" class="sidebar-block">
+<div id="topview_posts_wrap">
+    <h3 class="catListTitle"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">閱讀排行榜</font></font></h3>
+    <div id="TopViewPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/skywang12345/p/3245399.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            1. 紅黑樹(一)之原理和算法詳細介紹(592232)
+                        </font></font></a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/skywang12345/p/3310835.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            2. Java 集合系列10之HashMap詳細介紹(源碼解析)和使用示例(318616)
+                        </font></font></a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/skywang12345/p/3603935.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            3. 數據結構與算法系列目錄(226148)
+                        </font></font></a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/skywang12345/p/3711483.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            4. 圖的遍歷之深度優先搜索和廣度優先搜索(192170)
+                        </font></font></a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/skywang12345/p/3310928.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                            5. Java 集合系列12之TreeMap詳細介紹(源碼解析)和使用示例(185589)
+                        </font></font></a>
+                    </li>
+        </ul>
+    </div>
+</div></div>
+
+<!-- 评论排行榜 -->
+
+
+<!-- 推荐排行榜 -->
+</div>
+                    <script>loadBlogSideColumn();</script>
+        
+        <div class="spacer">
+            &nbsp;</div>
+    </div>
+    <div class="centercolumn">
+        <div id="post_detail">
+    <div class="singlepost">
+        <div class="posttitle">
+            
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/skywang12345/p/3576328.html">
+    <span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉查找樹(一)之圖文解析和C語言的實現</font></font></span>
+    
+
+
+
+</a>
+
+        </div>
+        <div class="postbody">
+            <div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<h3><strong><span style="font-family: 黑体; font-size: 18pt; line-height: 1.5; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">概要</font></font></span></strong></h3>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp; &nbsp; &nbsp; &nbsp;本章先對二叉樹的相關理論知識進行介紹，然後給出C語言的詳細實現。</font><font style="vertical-align: inherit;">關於二叉樹的學習，需要說明的是：它並不難，不僅不難，而且它非常簡單。</font><font style="vertical-align: inherit;">初次接觸樹的時候，我也覺得它似乎很難；而之所產生這種感覺主要是由於二叉樹有一大堆陌生的概念、性質等內容。</font><font style="vertical-align: inherit;">而當我真正的實現了二叉樹再回過頭來看它的相關概念和性質的時候，覺得原來它是如此的簡單！</font><font style="vertical-align: inherit;">因此，建議在學習二叉樹的時候：先對二叉樹基本的概念、性質有個基本了解，遇到難懂的知識點，可以畫圖來幫助理解；在有個基本的概念之後，再親自動手實現二叉查找樹(這一點至關重要!)；最後再回過頭來總結一下二叉樹的理論知識時，你會發現——它的確很簡單！</font><font style="vertical-align: inherit;">在代碼實踐中，我以"二叉查找樹，而不是單純的二叉樹"為例子進行說明，單純的二叉樹非常簡單，實際使用很少。</font><font style="vertical-align: inherit;">況且掌握了二叉查找樹，二叉樹也就自然掌握了。</font></font></span></p>
+<p><span style="font-size: 16px; color: rgba(255, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp; &nbsp; &nbsp; 本篇實現的二叉查找樹是C語言版的，後面章節再分別給出C++和Java版本的實現。</font><font style="vertical-align: inherit;">您可以根據自己熟悉的語言進行實踐學習！</font></font></span></p>
+<p><span style="font-size: 16px; color: rgba(255, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&nbsp; &nbsp; &nbsp; 請務必深刻理解、實踐並掌握"二叉查找樹"！</font><font style="vertical-align: inherit;">它是後面學習AVL樹、伸展樹、紅黑樹等相關樹結構的基石！</font></font></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">目錄</font></font></span><br><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1.&nbsp;</font></font><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#a1"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">樹的介紹</font></font></a></span><br><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2.&nbsp;</font></font><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#a2"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉樹的介紹</font></font></a></span><br><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3.&nbsp;</font></font><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#a3"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉查找樹的C實現</font></font></a></span><br><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">4.&nbsp;</font></font><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#a4"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉查找樹的C測試程序</font></font></a></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">轉載請註明出處：</font></font><a href="http://www.cnblogs.com/skywang12345/p/3576328.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://www.cnblogs.com/skywang12345/p/3576328.html</font></font></a></span></p>
+<hr>
+<p><span style="font-size: 16px"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">更多內容</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">:&nbsp;</font></font><span style="text-decoration: underline"><a href="http://www.cnblogs.com/skywang12345/p/3603935.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">數據結構與算法系列目錄</font></font></a></span></span><span style="font-size: 16px; line-height: 1.5">&nbsp;</span></p>
+<p><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(01).&nbsp;</font></font><a class="titlelink" href="http://www.cnblogs.com/skywang12345/p/3576328.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉查找樹(一)之圖文解析和C語言的實現</font></font></a></span><br><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(02).&nbsp;</font></font><a class="titlelink" href="http://www.cnblogs.com/skywang12345/p/3576373.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉查找樹(二)之C++的實現</font></font></a></span><br><span style="font-size: 16px"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(03).&nbsp;</font></font><a class="titlelink" href="http://www.cnblogs.com/skywang12345/p/3576452.html"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">二叉查找樹(三)之Java的實現</font></font></a></span><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#a3"><br></a></p>
+<p>&nbsp;</p>
+<h3><strong><span style="font-family: 黑体; font-size: 18pt; line-height: 1.5; color: rgba(0, 0, 0, 1)"><a name="a1"></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">樹的介紹</font></font></span></strong></h3>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1. 樹的定義</font></font></span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">樹是一種數據結構，它是由n（n&gt;=1）個有限節點組成一個具有層次關係的集合。</font></font></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270929194211610.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270929194211610.jpg" alt="" width="400" height="238"></a></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">把它叫做“樹”是因為它看起來像一棵倒掛的樹，也就是說它是根朝上，而葉朝下的。</font><font style="vertical-align: inherit;">它具有以下的特點：</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(01)每個節點有零個或多個子節點；</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(02)沒有父節點的節點稱為根節點；</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(03)每一個非根節點有且只有一個父節點；</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(04 )除了根節點外，每個子節點可以分為多個不相交的子樹。</font></font></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2. 樹的基本術語</font></font></span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">若一個結點有子樹，那麼該結點稱為子樹根的"雙親"，子樹的根是該結點的"孩子"。</font><font style="vertical-align: inherit;">有相同雙親的結點互為"兄弟"。</font><font style="vertical-align: inherit;">一個結點的所有子樹上的任何結點都是該結點的後裔。</font><font style="vertical-align: inherit;">從根結點到某個結點的路徑上的所有結點都是該結點的祖先。</font></font></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">結點的度</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：結點擁有的子樹的數目。</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">葉子</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：度為零的結點。</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">分支結點</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：度不為零的結點。</font></font></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">樹的度</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：樹中結點的最大的度。</font></font></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>层次</strong>：根结点的层次为1，其余结点的层次等于该结点的双亲结点的层次加1。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>树的高度</strong>：树中结点的最大层次。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>无序树</strong>：如果树中结点的各子树之间的次序是不重要的，可以交换位置。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>有序树</strong>：如果树中结点的各子树之间的次序是重要的, 不可以交换位置。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>森林</strong>：0个或多个不相交的树组成。对森林加上一个根，森林即成为树；删去根，树即成为森林。</span></p>
+<p>&nbsp;</p>
+<h3><span style="font-family: 黑体; font-size: 18pt; line-height: 1.5; color: rgba(0, 0, 0, 1)"><a name="a2"></a>二叉树的介绍</span></h3>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">1. 二叉树的定义</span></strong></span></p>
+<p><span style="font-size: 16px"><span style="color: rgba(0, 0, 0, 1)">二叉树是每个节点最多有两个子树的树结构。它有五种基本形态：<span style="color: rgba(0, 128, 0, 1)">二叉树可以是空集；根可以有空的左子树或右子树；或者左、右子树皆为空。</span></span><span style="color: rgba(0, 0, 0, 1)"><br></span></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270929530778327.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270929530778327.jpg" alt="" width="800" height="184"></a></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">2. 二叉树的性质</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">二叉树有以下几个性质：TODO(上标和下标)</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>性质1</strong>：二叉树第i层上的结点数目最多为&nbsp;<strong>2</strong><sup><strong>{i-1}</strong>&nbsp;</sup>(i≥1)。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>性质2</strong>：深度为k的二叉树至多有<strong>2<sup>{k}</sup>-1</strong>个结点(k≥1)。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>性质3</strong>：包含n个结点的二叉树的高度至少为<strong>log<sub>2</sub>&nbsp;(n+1)</strong>。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>性质4</strong>：在任意一棵二叉树中，若终端结点的个数为<strong>n<sub>0</sub></strong>，度为2的结点数为<strong>n<sub>2</sub></strong>，则<strong>n<sub>0</sub>=n<sub>2</sub>+1</strong>。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp;</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>2.1 性质1：二叉树第i层上的结点数目最多为&nbsp;2<sup>{i-1}&nbsp;</sup>(i≥1)</strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">证明：下面用"数学归纳法"进行证明。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; (01) 当i=1时，第i层的节点数目为2<sup>{i-1}</sup>=2<sup>{0}</sup>=1。因为第1层上只有一个根结点，所以命题成立。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; (02) 假设当i&gt;1，第i层的节点数目为2<sup>{i-1}</sup>。这个是根据(01)推断出来的！</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;下面根据这个假设，推断出"第(i+1)层的节点数目为2<sup>{i}</sup>"即可。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 由于二叉树的每个结点至多有两个孩子，故"第(i+1)层上的结点数目" 最多是 "第i层的结点数目的2倍"。即，第(i+1)层上的结点数目最大值=2×2<sup>{i-1}</sup>=2<sup>{i}</sup>。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 故假设成立，原命题得证！</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp;</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>2.2 性质2：深度为k的二叉树至多有2<sup>{k}</sup>-1个结点(k≥1)</strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">证明：在具有相同深度的二叉树中，当每一层都含有最大结点数时，其树中结点数最多。利用"性质1"可知，深度为k的二叉树的结点数至多为：</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2<sup>0</sup>+2<sup>1</sup>+…+2<sup>k-1</sup>=2<sup>k</sup>-1</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;故原命题得证！</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp;</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>2.3 性质3：包含n个结点的二叉树的高度至少为log<sub>2</sub>&nbsp;(n+1)</strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">证明：根据"性质2"可知，高度为h的二叉树最多有2<sup>{h}</sup>–1个结点。反之，对于包含n个节点的二叉树的高度至少为log<sub>2</sub>(n+1)。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp;</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>2.4 性质4：在任意一棵二叉树中，若终端结点的个数为n<sub>0</sub>，度为2的结点数为n<sub>2</sub>，则n<sub>0</sub>=n<sub>2</sub>+1</strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">证明：因为二叉树中所有结点的度数均不大于2，所以结点总数(记为n)="0度结点数(n<sub>0</sub>)" + "1度结点数(n<sub>1</sub>)" + "2度结点数(n<sub>2</sub>)"。由此，得到等式一。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(等式一)&nbsp;n=n<sub>0</sub>+n<sub>1</sub>+n<sub>2</sub></span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">　 &nbsp; &nbsp; 另一方面，0度结点没有孩子，1度结点有一个孩子，2度结点有两个孩子，故二叉树中孩子结点总数是：n<sub>1</sub>+2n<sub>2</sub>。此外，只有根不是任何结点的孩子。故二叉树中的结点总数又可表示为等式二。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;(等式二)&nbsp;n=n<sub>1</sub>+2n<sub>2</sub>+1</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">&nbsp; &nbsp; &nbsp; &nbsp; 由(等式一)和(等式二)计算得到：n<sub>0</sub>=n<sub>2</sub>+1。原命题得证！</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">3. 满二叉树，完全二叉树和二叉查找树</span></strong></span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">3.1 满二叉树</span></strong></span></p>
+<p><span style="font-size: 16px"><span style="color: rgba(0, 0, 0, 1)"><strong>定义</strong>：高度为h，并且由2<sup>{h}</sup> –1个结点的二叉树，被称为满二叉树。</span><span style="color: rgba(0, 0, 0, 1)"><br></span></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270930282184259.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270930282184259.jpg" alt="" width="500" height="295"></a></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">3.2 完全二叉树</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>定义</strong>：一棵二叉树中，只有最下面两层结点的度可以小于2，并且最下一层的叶结点集中在靠左的若干位置上。这样的二叉树称为完全二叉树。</span><br><span style="font-size: 16px"><span style="color: rgba(0, 0, 0, 1)"><strong>特点</strong>：叶子结点只能出现在最下层和次下层，且最下层的叶子结点集中在树的左部。显然，一棵满二叉树必定是一棵完全二叉树，而完全二叉树未必是满二叉树。</span><span style="color: rgba(0, 0, 0, 1)"><br></span></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270931211084932.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270931211084932.jpg" alt="" width="500" height="313"></a></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">3.3 二叉查找树</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>定义</strong>：二叉查找树(Binary Search Tree)，又被称为二叉搜索树。设x为二叉查找树中的一个结点，x节点包含关键字key，节点x的key值记为key[x]。如果y是x的左子树中的一个结点，则key[y] &lt;= key[x]；如果y是x的右子树的一个结点，则key[y] &gt;= key[x]。</span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270932052801072.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270932052801072.jpg" alt="" width="500" height="313"></a></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">在二叉查找树中：</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体">(01) 若任意节点的左子树不空，则左子树上所有结点的值均小于它的根结点的值；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体">(02) 任意节点的右子树不空，则右子树上所有结点的值均大于它的根结点的值；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体">(03) 任意节点的左、右子树也分别为二叉查找树。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1); font-family: 楷体">(04) 没有键值相等的节点（no duplicate nodes）。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">在实际应用中，二叉查找树的使用比较多。下面，用C语言实现二叉查找树。</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<h3><strong><span style="font-family: 黑体; font-size: 18pt; line-height: 1.5; color: rgba(0, 0, 0, 1)"><a name="a3"></a>二叉查找树的C实现</span></strong></h3>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">1. 节点定义</span></strong></span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">1.1 节点定义</span></strong></span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>typedef <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> Type;<font></font>
+<font></font>
+typedef </span><span style="color: rgba(0, 0, 255, 1)">struct</span><span style="color: rgba(0, 0, 0, 1)"> BSTreeNode{<font></font>
+    Type   key;                    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 关键字(键值)</span>
+    <span style="color: rgba(0, 0, 255, 1)">struct</span> BSTreeNode *left;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 左孩子</span>
+    <span style="color: rgba(0, 0, 255, 1)">struct</span> BSTreeNode *right;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 右孩子</span>
+    <span style="color: rgba(0, 0, 255, 1)">struct</span> BSTreeNode *parent;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 父结点</span>
+}Node, *BSTree;</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">二叉查找树的节点包含的基本信息：</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(01) <strong><span style="color: rgba(0, 128, 0, 1)">key &nbsp; &nbsp; &nbsp;</span></strong>    -- 它是关键字，是用来对二叉查找树的节点进行排序的。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(02) <strong><span style="color: rgba(0, 128, 0, 1)">left &nbsp; &nbsp; &nbsp;</span> </strong>  -- 它指向当前节点的左孩子。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(03) <strong><span style="color: rgba(0, 128, 0, 1)">right</span></strong>&nbsp; &nbsp; -- 它指向当前节点的右孩子。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(04) <strong><span style="color: rgba(0, 128, 0, 1)">parent</span></strong> -- 它指向当前节点的父结点。</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">1.2 创建节点</span></strong></span></p>
+<p><span style="font-size: 16px">创建节点的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">static</span> Node* create_bstree_node(Type key, Node *parent, Node *left, Node*<span style="color: rgba(0, 0, 0, 1)"> right)<font></font>
+{<font></font>
+    Node</span>*<span style="color: rgba(0, 0, 0, 1)"> p;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> ((p = (Node *)malloc(<span style="color: rgba(0, 0, 255, 1)">sizeof</span>(Node))) ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NULL;<font></font>
+    p</span>-&gt;key =<span style="color: rgba(0, 0, 0, 1)"> key;<font></font>
+    p</span>-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> left;<font></font>
+    p</span>-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> right;<font></font>
+    p</span>-&gt;parent =<span style="color: rgba(0, 0, 0, 1)"> parent;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> p;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">2 遍历</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">这里讲解<strong><span style="color: rgba(0, 128, 0, 1)">前序遍历</span></strong>、<strong><span style="color: rgba(0, 128, 0, 1)">中序遍历</span></strong>、<strong><span style="color: rgba(0, 128, 0, 1)">后序遍历</span></strong>3种方式。</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">2.1 前序遍历</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">若二叉树非空，则执行以下操作：</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(01) 访问根结点；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(02) 先序遍历左子树；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(03) 先序遍历右子树。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">前序遍历代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> preorder_bstree(BSTree tree)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+    {<font></font>
+        printf(</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);<font></font>
+        preorder_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">left);<font></font>
+        preorder_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">right);<font></font>
+    }<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">2.2 中序遍历</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">若二叉树非空，则执行以下操作：</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(01) 中序遍历左子树；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(02) 访问根结点；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(03) 中序遍历右子树。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">中序遍历代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> inorder_bstree(BSTree tree)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+    {<font></font>
+        inorder_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">left);<font></font>
+        printf(</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);<font></font>
+        inorder_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">right);<font></font>
+    }<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">2.3 后序遍历</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">若二叉树非空，则执行以下操作：</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(01) 后序遍历左子树；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(02) 后序遍历右子树；</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(03) 访问根结点。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">后序遍历代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> postorder_bstree(BSTree tree)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+    {<font></font>
+        postorder_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">left);<font></font>
+        postorder_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">right);<font></font>
+        printf(</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);<font></font>
+    }<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px">下面通过例子对这些遍历方式进行介绍。</span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270932554522177.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270932554522177.jpg" alt="" width="360" height="219"></a></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">对于上面的二叉树而言，<br>(01) 前序遍历结果：<span style="color: rgba(255, 0, 0, 1)"> 3 1 2 5 4 6</span><br>(02) 中序遍历结果：<span style="color: rgba(255, 0, 0, 1)"> 1 2 3 4 5 6&nbsp;</span><br>(03) 后序遍历结果： <span style="color: rgba(255, 0, 0, 1)">2 1 4 6 5 3</span></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">3. 查找</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">递归版本的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_search(BSTree x, Type key)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (x==NULL || x-&gt;key==<span style="color: rgba(0, 0, 0, 1)">key)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> x;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (key &lt; x-&gt;<span style="color: rgba(0, 0, 0, 1)">key)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span> bstree_search(x-&gt;<span style="color: rgba(0, 0, 0, 1)">left, key);
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span>
+        <span style="color: rgba(0, 0, 255, 1)">return</span> bstree_search(x-&gt;<span style="color: rgba(0, 0, 0, 1)">right, key);<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">非递归版本的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>Node*<span style="color: rgba(0, 0, 0, 1)"> iterative_bstree_search(BSTree x, Type key)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">while</span> ((x!=NULL) &amp;&amp; (x-&gt;key!=<span style="color: rgba(0, 0, 0, 1)">key))<font></font>
+    {<font></font>
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (key &lt; x-&gt;<span style="color: rgba(0, 0, 0, 1)">key)<font></font>
+            x </span>= x-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+        </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+            x </span>= x-&gt;<span style="color: rgba(0, 0, 0, 1)">right;<font></font>
+    }<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> x;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">4. 最大值和最小值</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">查找最大值的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_maximum(BSTree tree)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (tree ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NULL;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">while</span>(tree-&gt;right !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        tree </span>= tree-&gt;<span style="color: rgba(0, 0, 0, 1)">right;
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px"><span style="color: rgba(0, 0, 0, 1)">查找最小值的代码</span></span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_minimum(BSTree tree)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (tree ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NULL;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">while</span>(tree-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        tree </span>= tree-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><br><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">5. 前驱和后继</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong><span style="color: rgba(0, 128, 0, 1)">节点的前驱</span></strong>：是该节点的左子树中的最大节点。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong><span style="color: rgba(0, 128, 0, 1)">节点的后继</span></strong>：是该节点的右子树中的最小节点。</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">查找前驱节点的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>Node* bstree_predecessor(Node *<span style="color: rgba(0, 0, 0, 1)">x)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x存在左孩子，则"x的前驱结点"为 "以其左孩子为根的子树的最大结点"。</span>
+    <span style="color: rgba(0, 0, 255, 1)">if</span> (x-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span> bstree_maximum(x-&gt;<span style="color: rgba(0, 0, 0, 1)">left);<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x没有左孩子。则x有以下两种可能：
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (01) x是"一个右孩子"，则"x的前驱结点"为 "它的父结点"。
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (01) x是"一个左孩子"，则查找"x的最低的父结点，并且该父结点要具有右孩子"，找到的这个"最低的父结点"就是"x的前驱结点"。</span>
+    Node* y = x-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+    </span><span style="color: rgba(0, 0, 255, 1)">while</span> ((y!=NULL) &amp;&amp; (x==y-&gt;<span style="color: rgba(0, 0, 0, 1)">left))<font></font>
+    {<font></font>
+        x </span>=<span style="color: rgba(0, 0, 0, 1)"> y;<font></font>
+        y </span>= y-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;<font></font>
+    }<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> y;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">查找后继节点的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>Node* bstree_successor(Node *<span style="color: rgba(0, 0, 0, 1)">x)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x存在右孩子，则"x的后继结点"为 "以其右孩子为根的子树的最小结点"。</span>
+    <span style="color: rgba(0, 0, 255, 1)">if</span> (x-&gt;right !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span> bstree_minimum(x-&gt;<span style="color: rgba(0, 0, 0, 1)">right);<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x没有右孩子。则x有以下两种可能：
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (01) x是"一个左孩子"，则"x的后继结点"为 "它的父结点"。
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (02) x是"一个右孩子"，则查找"x的最低的父结点，并且该父结点要具有左孩子"，找到的这个"最低的父结点"就是"x的后继结点"。</span>
+    Node* y = x-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+    </span><span style="color: rgba(0, 0, 255, 1)">while</span> ((y!=NULL) &amp;&amp; (x==y-&gt;<span style="color: rgba(0, 0, 0, 1)">right))<font></font>
+    {<font></font>
+        x </span>=<span style="color: rgba(0, 0, 0, 1)"> y;<font></font>
+        y </span>= y-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;<font></font>
+    }<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> y;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">6. 插入</span></strong></span></p>
+<p><span style="font-size: medium"><span style="line-height: 24px">插入节点的代码</span></span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">static</span> Node* bstree_insert(BSTree tree, Node *<span style="color: rgba(0, 0, 0, 1)">z)<font></font>
+{<font></font>
+    Node </span>*y =<span style="color: rgba(0, 0, 0, 1)"> NULL;<font></font>
+    Node </span>*x =<span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 查找z的插入位置</span>
+    <span style="color: rgba(0, 0, 255, 1)">while</span> (x !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+    {<font></font>
+        y </span>=<span style="color: rgba(0, 0, 0, 1)"> x;
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (z-&gt;key &lt; x-&gt;<span style="color: rgba(0, 0, 0, 1)">key)<font></font>
+            x </span>= x-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+        </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+            x </span>= x-&gt;<span style="color: rgba(0, 0, 0, 1)">right;<font></font>
+    }<font></font>
+<font></font>
+    z</span>-&gt;parent =<span style="color: rgba(0, 0, 0, 1)"> y;
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (y==<span style="color: rgba(0, 0, 0, 1)">NULL)<font></font>
+        tree </span>=<span style="color: rgba(0, 0, 0, 1)"> z;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (z-&gt;key &lt; y-&gt;<span style="color: rgba(0, 0, 0, 1)">key)<font></font>
+        y</span>-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> z;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+        y</span>-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> z;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+}<font></font>
+<font></font>
+Node</span>*<span style="color: rgba(0, 0, 0, 1)"> insert_bstree(BSTree tree, Type key)<font></font>
+{<font></font>
+    Node </span>*z;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 新建结点<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果新建结点失败，则返回。</span>
+    <span style="color: rgba(0, 0, 255, 1)">if</span> ((z=create_bstree_node(key, NULL, NULL, NULL)) ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> bstree_insert(tree, z);<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">bstree_insert(tree, z)是<span style="color: rgba(0, 128, 0, 1)">内部函数</span>，它的作用是：将结点(z)插入到二叉树(tree)中，并返回插入节点后的根节点。<br>insert_bstree(tree, key)是<span style="color: rgba(0, 128, 0, 1)">对外接口</span>，它的作用是：在树中新增节点，key是节点的值；并返回插入节点后的根节点。</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(255, 0, 0, 1)">注：本文实现的二叉查找树是允许插入相同键值的节点的！若用户不希望插入相同键值的节点，将bstree_insert()修改为以下代码即可。</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">static</span> Node* bstree_insert(BSTree tree, Node *<span style="color: rgba(0, 0, 0, 1)">z)<font></font>
+{<font></font>
+    Node </span>*y =<span style="color: rgba(0, 0, 0, 1)"> NULL;<font></font>
+    Node </span>*x =<span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 查找z的插入位置</span>
+    <span style="color: rgba(0, 0, 255, 1)">while</span> (x !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+    {<font></font>
+        y </span>=<span style="color: rgba(0, 0, 0, 1)"> x;
+        </span><span style="color: rgba(255, 0, 0, 1)">if (z-&gt;key &lt; x-&gt;key)<font></font>
+            x = x-&gt;left;<font></font>
+        else  if (z-&gt;key &gt; x-&gt;key)<font></font>
+            x = x-&gt;right;<font></font>
+        else<font></font>
+        {<font></font>
+            free(z); // 释放之前分配的系统。<font></font>
+            return</span><span style="color: rgba(0, 0, 0, 1)"><span style="color: rgba(255, 0, 0, 1)"> tree;<font></font>
+        }</span><font></font>
+    }<font></font>
+<font></font>
+    z</span>-&gt;parent =<span style="color: rgba(0, 0, 0, 1)"> y;
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (y==<span style="color: rgba(0, 0, 0, 1)">NULL)<font></font>
+        tree </span>=<span style="color: rgba(0, 0, 0, 1)"> z;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (z-&gt;key &lt; y-&gt;<span style="color: rgba(0, 0, 0, 1)">key)<font></font>
+        y</span>-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> z;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+        y</span>-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> z;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 0, 1)">7. 删除</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">删除节点的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">static</span> Node* bstree_delete(BSTree tree, Node *<span style="color: rgba(0, 0, 0, 1)">z)<font></font>
+{<font></font>
+    Node </span>*x=<span style="color: rgba(0, 0, 0, 1)">NULL;<font></font>
+    Node </span>*y=<span style="color: rgba(0, 0, 0, 1)">NULL;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> ((z-&gt;left == NULL) || (z-&gt;right ==<span style="color: rgba(0, 0, 0, 1)"> NULL) )<font></font>
+        y </span>=<span style="color: rgba(0, 0, 0, 1)"> z;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+        y </span>=<span style="color: rgba(0, 0, 0, 1)"> bstree_successor(z);<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (y-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        x </span>= y-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+        x </span>= y-&gt;<span style="color: rgba(0, 0, 0, 1)">right;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (x !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        x</span>-&gt;parent = y-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (y-&gt;parent ==<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        tree </span>=<span style="color: rgba(0, 0, 0, 1)"> x;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (y == y-&gt;parent-&gt;<span style="color: rgba(0, 0, 0, 1)">left)<font></font>
+        y</span>-&gt;parent-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> x;
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+        y</span>-&gt;parent-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> x;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (y !=<span style="color: rgba(0, 0, 0, 1)"> z) <font></font>
+        z</span>-&gt;key = y-&gt;<span style="color: rgba(0, 0, 0, 1)">key;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (y!=<span style="color: rgba(0, 0, 0, 1)">NULL)<font></font>
+        free(y);<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+}<font></font>
+<font></font>
+Node</span>*<span style="color: rgba(0, 0, 0, 1)"> delete_bstree(BSTree tree, Type key)<font></font>
+{<font></font>
+    Node </span>*z, *<span style="color: rgba(0, 0, 0, 1)">node; <font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> ((z = bstree_search(tree, key)) !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        tree </span>=<span style="color: rgba(0, 0, 0, 1)"> bstree_delete(tree, z);<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px">bstree_delete(tree, z)是<span style="color: rgba(0, 128, 0, 1)">内部函数</span>，它的作用是：删除二叉树(tree)中的节点(z)，并返回删除节点后的根节点。</span><br><span style="font-size: 16px">delete_bstree(tree, key)是<span style="color: rgba(0, 128, 0, 1)">对外接口</span>，它的作用是：在树中查找键值为key的节点，找到的话就删除该节点；并返回删除节点后的根节点。</span></p>
+<p><span style="font-size: 16px"><strong><br class="Apple-interchange-newline"><span style="color: rgba(0, 0, 0, 1)">8. 打印</span></strong></span></p>
+<p><span style="font-size: 16px">打印二叉树的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">void</span> print_bstree(BSTree tree, Type key, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> direction)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+    {<font></font>
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span>(direction==<span style="color: rgba(128, 0, 128, 1)">0</span>)    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> tree是根节点</span>
+            printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%2d is root\n</span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+        </span><span style="color: rgba(0, 0, 255, 1)">else</span>                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> tree是分支节点</span>
+            printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%2d is %2d's %6s child\n</span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;key, key, direction==<span style="color: rgba(128, 0, 128, 1)">1</span>?<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">right</span><span style="color: rgba(128, 0, 0, 1)">"</span> : <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">left</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);<font></font>
+<font></font>
+        print_bstree(tree</span>-&gt;left, tree-&gt;key, -<span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">);<font></font>
+        print_bstree(tree</span>-&gt;right,tree-&gt;key,  <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">);<font></font>
+    }<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">print_bstree(tree, key, direction)的作用是打印整颗二叉树(tree)。其中，tree是二叉树节点，key是二叉树的键值，而direction表示该节点的类型：</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">direction为 0，表示该节点是根节点;</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">direction为-1，表示该节点是它的父结点的左孩子;</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">direction为&nbsp;1，表示该节点是它的父结点的右孩子。</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><strong>9. 销毁二叉树</strong></span></p>
+<p><span style="font-size: 16px">销毁二叉树的代码</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> destroy_bstree(BSTree tree)<font></font>
+{<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (tree==<span style="color: rgba(0, 0, 0, 1)">NULL)
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> ;<font></font>
+<font></font>
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (tree-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        destroy_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">left);
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (tree-&gt;right !=<span style="color: rgba(0, 0, 0, 1)"> NULL)<font></font>
+        destroy_bstree(tree</span>-&gt;<span style="color: rgba(0, 0, 0, 1)">right);<font></font>
+<font></font>
+    free(tree);<font></font>
+}</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p>&nbsp;</p>
+<p><span style="font-size: 18px"><strong><span style="color: rgba(255, 0, 0, 1)">完整的实现代码</span></strong></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">二叉查找树的头文件(</span><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">bstree.h)</span></p>
+<div class="cnblogs_code"><img id="code_img_closed_b44353fd-2dc6-4d90-b655-76463bd41c40" class="code_img_closed" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/ContractedBlock.gif" alt="" style="display: none;"><img id="code_img_opened_b44353fd-2dc6-4d90-b655-76463bd41c40" class="code_img_opened" style="" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/ExpandedBlockStart.gif" alt=""><div id="cnblogs_code_open_b44353fd-2dc6-4d90-b655-76463bd41c40" class="cnblogs_code_hide" style="display: block;"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 0, 0, 1)">#ifndef _BINARY_SEARCH_TREE_H_
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 255, 1)">#define</span> _BINARY_SEARCH_TREE_H_
+<span style="color: rgba(0, 128, 128, 1)"> 3</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 4</span> typedef <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> Type;
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 6</span> typedef <span style="color: rgba(0, 0, 255, 1)">struct</span><span style="color: rgba(0, 0, 0, 1)"> BSTreeNode{
+</span><span style="color: rgba(0, 128, 128, 1)"> 7</span>     Type   key;                    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 关键字(键值)</span>
+<span style="color: rgba(0, 128, 128, 1)"> 8</span>     <span style="color: rgba(0, 0, 255, 1)">struct</span> BSTreeNode *left;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 左孩子</span>
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>     <span style="color: rgba(0, 0, 255, 1)">struct</span> BSTreeNode *right;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 右孩子</span>
+<span style="color: rgba(0, 128, 128, 1)">10</span>     <span style="color: rgba(0, 0, 255, 1)">struct</span> BSTreeNode *parent;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 父结点</span>
+<span style="color: rgba(0, 128, 128, 1)">11</span> }Node, *<span style="color: rgba(0, 0, 0, 1)">BSTree;
+</span><span style="color: rgba(0, 128, 128, 1)">12</span> 
+<span style="color: rgba(0, 128, 128, 1)">13</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 前序遍历"二叉树"</span>
+<span style="color: rgba(0, 128, 128, 1)">14</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> preorder_bstree(BSTree tree);
+</span><span style="color: rgba(0, 128, 128, 1)">15</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 中序遍历"二叉树"</span>
+<span style="color: rgba(0, 128, 128, 1)">16</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> inorder_bstree(BSTree tree);
+</span><span style="color: rgba(0, 128, 128, 1)">17</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 后序遍历"二叉树"</span>
+<span style="color: rgba(0, 128, 128, 1)">18</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> postorder_bstree(BSTree tree);
+</span><span style="color: rgba(0, 128, 128, 1)">19</span> 
+<span style="color: rgba(0, 128, 128, 1)">20</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (递归实现)查找"二叉树x"中键值为key的节点</span>
+<span style="color: rgba(0, 128, 128, 1)">21</span> Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_search(BSTree x, Type key);
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (非递归实现)查找"二叉树x"中键值为key的节点</span>
+<span style="color: rgba(0, 128, 128, 1)">23</span> Node*<span style="color: rgba(0, 0, 0, 1)"> iterative_bstree_search(BSTree x, Type key);
+</span><span style="color: rgba(0, 128, 128, 1)">24</span> 
+<span style="color: rgba(0, 128, 128, 1)">25</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 查找最小结点：返回tree为根结点的二叉树的最小结点。</span>
+<span style="color: rgba(0, 128, 128, 1)">26</span> Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_minimum(BSTree tree);
+</span><span style="color: rgba(0, 128, 128, 1)">27</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 查找最大结点：返回tree为根结点的二叉树的最大结点。</span>
+<span style="color: rgba(0, 128, 128, 1)">28</span> Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_maximum(BSTree tree);
+</span><span style="color: rgba(0, 128, 128, 1)">29</span> 
+<span style="color: rgba(0, 128, 128, 1)">30</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 找结点(x)的后继结点。即，查找"二叉树中数据值大于该结点"的"最小结点"。</span>
+<span style="color: rgba(0, 128, 128, 1)">31</span> Node* bstree_successor(Node *<span style="color: rgba(0, 0, 0, 1)">x);
+</span><span style="color: rgba(0, 128, 128, 1)">32</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 找结点(x)的前驱结点。即，查找"二叉树中数据值小于该结点"的"最大结点"。</span>
+<span style="color: rgba(0, 128, 128, 1)">33</span> Node* bstree_predecessor(Node *<span style="color: rgba(0, 0, 0, 1)">x);
+</span><span style="color: rgba(0, 128, 128, 1)">34</span> 
+<span style="color: rgba(0, 128, 128, 1)">35</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将结点插入到二叉树中，并返回根节点</span>
+<span style="color: rgba(0, 128, 128, 1)">36</span> Node*<span style="color: rgba(0, 0, 0, 1)"> insert_bstree(BSTree tree, Type key);
+</span><span style="color: rgba(0, 128, 128, 1)">37</span> 
+<span style="color: rgba(0, 128, 128, 1)">38</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 删除结点(key为节点的值)，并返回根节点</span>
+<span style="color: rgba(0, 128, 128, 1)">39</span> Node*<span style="color: rgba(0, 0, 0, 1)"> delete_bstree(BSTree tree, Type key);
+</span><span style="color: rgba(0, 128, 128, 1)">40</span> 
+<span style="color: rgba(0, 128, 128, 1)">41</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 销毁二叉树</span>
+<span style="color: rgba(0, 128, 128, 1)">42</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> destroy_bstree(BSTree tree);
+</span><span style="color: rgba(0, 128, 128, 1)">43</span> 
+<span style="color: rgba(0, 128, 128, 1)">44</span> <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 打印二叉树</span>
+<span style="color: rgba(0, 128, 128, 1)">45</span> <span style="color: rgba(0, 0, 255, 1)">void</span> print_bstree(BSTree tree, Type key, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> direction);
+</span><span style="color: rgba(0, 128, 128, 1)">46</span> 
+<span style="color: rgba(0, 128, 128, 1)">47</span> <span style="color: rgba(0, 0, 255, 1)">#endif</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div><span class="cnblogs_code_collapse" style="display: none;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">View Code</font></font></span></div>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">二叉查找树的实现文件(</span><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">bstree.c)</span></p>
+<div class="cnblogs_code"><img id="code_img_closed_afbcb010-1a4f-492e-a1f7-84b11d9dd26a" class="code_img_closed" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/ContractedBlock.gif" alt="" style="display: none;"><img id="code_img_opened_afbcb010-1a4f-492e-a1f7-84b11d9dd26a" class="code_img_opened" style="" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/ExpandedBlockStart.gif" alt=""><div id="cnblogs_code_open_afbcb010-1a4f-492e-a1f7-84b11d9dd26a" class="cnblogs_code_hide" style="display: block;"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 128, 128, 1)">  1</span> <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)">*
+</span><span style="color: rgba(0, 128, 128, 1)">  2</span> <span style="color: rgba(0, 128, 0, 1)"> * 二叉搜索树(C语言): C语言实现的二叉搜索树。
+</span><span style="color: rgba(0, 128, 128, 1)">  3</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">  4</span> <span style="color: rgba(0, 128, 0, 1)"> * @author skywang
+</span><span style="color: rgba(0, 128, 128, 1)">  5</span> <span style="color: rgba(0, 128, 0, 1)"> * @date 2013/11/07
+</span><span style="color: rgba(0, 128, 128, 1)">  6</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">  7</span> 
+<span style="color: rgba(0, 128, 128, 1)">  8</span> #include &lt;stdio.h&gt;
+<span style="color: rgba(0, 128, 128, 1)">  9</span> #include &lt;stdlib.h&gt;
+<span style="color: rgba(0, 128, 128, 1)"> 10</span> #include <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">bstree.h</span><span style="color: rgba(128, 0, 0, 1)">"</span>
+<span style="color: rgba(0, 128, 128, 1)"> 11</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 12</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 13</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)"> 14</span> <span style="color: rgba(0, 128, 0, 1)"> * 前序遍历"二叉树"
+</span><span style="color: rgba(0, 128, 128, 1)"> 15</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 16</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> preorder_bstree(BSTree tree)
+</span><span style="color: rgba(0, 128, 128, 1)"> 17</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 18</span>     <span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)"> 19</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 20</span>         printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+</span><span style="color: rgba(0, 128, 128, 1)"> 21</span>         preorder_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">left);
+</span><span style="color: rgba(0, 128, 128, 1)"> 22</span>         preorder_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">right);
+</span><span style="color: rgba(0, 128, 128, 1)"> 23</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)"> 24</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)"> 25</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 26</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)"> 27</span> <span style="color: rgba(0, 128, 0, 1)"> * 中序遍历"二叉树"
+</span><span style="color: rgba(0, 128, 128, 1)"> 28</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 29</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> inorder_bstree(BSTree tree)
+</span><span style="color: rgba(0, 128, 128, 1)"> 30</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 31</span>     <span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)"> 32</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 33</span>         inorder_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">left);
+</span><span style="color: rgba(0, 128, 128, 1)"> 34</span>         printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+</span><span style="color: rgba(0, 128, 128, 1)"> 35</span>         inorder_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">right);
+</span><span style="color: rgba(0, 128, 128, 1)"> 36</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)"> 37</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)"> 38</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 39</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)"> 40</span> <span style="color: rgba(0, 128, 0, 1)"> * 后序遍历"二叉树"
+</span><span style="color: rgba(0, 128, 128, 1)"> 41</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 42</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> postorder_bstree(BSTree tree)
+</span><span style="color: rgba(0, 128, 128, 1)"> 43</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 44</span>     <span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)"> 45</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 46</span>         postorder_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">left);
+</span><span style="color: rgba(0, 128, 128, 1)"> 47</span>         postorder_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">right);
+</span><span style="color: rgba(0, 128, 128, 1)"> 48</span>         printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+</span><span style="color: rgba(0, 128, 128, 1)"> 49</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)"> 50</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)"> 51</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 52</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)"> 53</span> <span style="color: rgba(0, 128, 0, 1)"> * (递归实现)查找"二叉树x"中键值为key的节点
+</span><span style="color: rgba(0, 128, 128, 1)"> 54</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 55</span> Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_search(BSTree x, Type key)
+</span><span style="color: rgba(0, 128, 128, 1)"> 56</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 57</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (x==NULL || x-&gt;key==<span style="color: rgba(0, 0, 0, 1)">key)
+</span><span style="color: rgba(0, 128, 128, 1)"> 58</span>         <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> x;
+</span><span style="color: rgba(0, 128, 128, 1)"> 59</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 60</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (key &lt; x-&gt;<span style="color: rgba(0, 0, 0, 1)">key)
+</span><span style="color: rgba(0, 128, 128, 1)"> 61</span>         <span style="color: rgba(0, 0, 255, 1)">return</span> bstree_search(x-&gt;<span style="color: rgba(0, 0, 0, 1)">left, key);
+</span><span style="color: rgba(0, 128, 128, 1)"> 62</span>     <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)"> 63</span>         <span style="color: rgba(0, 0, 255, 1)">return</span> bstree_search(x-&gt;<span style="color: rgba(0, 0, 0, 1)">right, key);
+</span><span style="color: rgba(0, 128, 128, 1)"> 64</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)"> 65</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 66</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)"> 67</span> <span style="color: rgba(0, 128, 0, 1)"> * (非递归实现)查找"二叉树x"中键值为key的节点
+</span><span style="color: rgba(0, 128, 128, 1)"> 68</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 69</span> Node*<span style="color: rgba(0, 0, 0, 1)"> iterative_bstree_search(BSTree x, Type key)
+</span><span style="color: rgba(0, 128, 128, 1)"> 70</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 71</span>     <span style="color: rgba(0, 0, 255, 1)">while</span> ((x!=NULL) &amp;&amp; (x-&gt;key!=<span style="color: rgba(0, 0, 0, 1)">key))
+</span><span style="color: rgba(0, 128, 128, 1)"> 72</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 73</span>         <span style="color: rgba(0, 0, 255, 1)">if</span> (key &lt; x-&gt;<span style="color: rgba(0, 0, 0, 1)">key)
+</span><span style="color: rgba(0, 128, 128, 1)"> 74</span>             x = x-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+</span><span style="color: rgba(0, 128, 128, 1)"> 75</span>         <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)"> 76</span>             x = x-&gt;<span style="color: rgba(0, 0, 0, 1)">right;
+</span><span style="color: rgba(0, 128, 128, 1)"> 77</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)"> 78</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 79</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> x;
+</span><span style="color: rgba(0, 128, 128, 1)"> 80</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)"> 81</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 82</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 83</span> <span style="color: rgba(0, 128, 0, 1)"> * 查找最小结点：返回tree为根结点的二叉树的最小结点。
+</span><span style="color: rgba(0, 128, 128, 1)"> 84</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 85</span> Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_minimum(BSTree tree)
+</span><span style="color: rgba(0, 128, 128, 1)"> 86</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)"> 87</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (tree ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)"> 88</span>         <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NULL;
+</span><span style="color: rgba(0, 128, 128, 1)"> 89</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 90</span>     <span style="color: rgba(0, 0, 255, 1)">while</span>(tree-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)"> 91</span>         tree = tree-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+</span><span style="color: rgba(0, 128, 128, 1)"> 92</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)"> 93</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)"> 94</span>  
+<span style="color: rgba(0, 128, 128, 1)"> 95</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 96</span> <span style="color: rgba(0, 128, 0, 1)"> * 查找最大结点：返回tree为根结点的二叉树的最大结点。
+</span><span style="color: rgba(0, 128, 128, 1)"> 97</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 98</span> Node*<span style="color: rgba(0, 0, 0, 1)"> bstree_maximum(BSTree tree)
+</span><span style="color: rgba(0, 128, 128, 1)"> 99</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">100</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (tree ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">101</span>         <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NULL;
+</span><span style="color: rgba(0, 128, 128, 1)">102</span> 
+<span style="color: rgba(0, 128, 128, 1)">103</span>     <span style="color: rgba(0, 0, 255, 1)">while</span>(tree-&gt;right !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">104</span>         tree = tree-&gt;<span style="color: rgba(0, 0, 0, 1)">right;
+</span><span style="color: rgba(0, 128, 128, 1)">105</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)">106</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">107</span> 
+<span style="color: rgba(0, 128, 128, 1)">108</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)">109</span> <span style="color: rgba(0, 128, 0, 1)"> * 找结点(x)的后继结点。即，查找"二叉树中数据值大于该结点"的"最小结点"。
+</span><span style="color: rgba(0, 128, 128, 1)">110</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">111</span> Node* bstree_successor(Node *<span style="color: rgba(0, 0, 0, 1)">x)
+</span><span style="color: rgba(0, 128, 128, 1)">112</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">113</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x存在右孩子，则"x的后继结点"为 "以其右孩子为根的子树的最小结点"。</span>
+<span style="color: rgba(0, 128, 128, 1)">114</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (x-&gt;right !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">115</span>         <span style="color: rgba(0, 0, 255, 1)">return</span> bstree_minimum(x-&gt;<span style="color: rgba(0, 0, 0, 1)">right);
+</span><span style="color: rgba(0, 128, 128, 1)">116</span> 
+<span style="color: rgba(0, 128, 128, 1)">117</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x没有右孩子。则x有以下两种可能：
+</span><span style="color: rgba(0, 128, 128, 1)">118</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (01) x是"一个左孩子"，则"x的后继结点"为 "它的父结点"。
+</span><span style="color: rgba(0, 128, 128, 1)">119</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (02) x是"一个右孩子"，则查找"x的最低的父结点，并且该父结点要具有左孩子"，找到的这个"最低的父结点"就是"x的后继结点"。</span>
+<span style="color: rgba(0, 128, 128, 1)">120</span>     Node* y = x-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+</span><span style="color: rgba(0, 128, 128, 1)">121</span>     <span style="color: rgba(0, 0, 255, 1)">while</span> ((y!=NULL) &amp;&amp; (x==y-&gt;<span style="color: rgba(0, 0, 0, 1)">right))
+</span><span style="color: rgba(0, 128, 128, 1)">122</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">123</span>         x =<span style="color: rgba(0, 0, 0, 1)"> y;
+</span><span style="color: rgba(0, 128, 128, 1)">124</span>         y = y-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+</span><span style="color: rgba(0, 128, 128, 1)">125</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">126</span> 
+<span style="color: rgba(0, 128, 128, 1)">127</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> y;
+</span><span style="color: rgba(0, 128, 128, 1)">128</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">129</span>  
+<span style="color: rgba(0, 128, 128, 1)">130</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)">131</span> <span style="color: rgba(0, 128, 0, 1)"> * 找结点(x)的前驱结点。即，查找"二叉树中数据值小于该结点"的"最大结点"。
+</span><span style="color: rgba(0, 128, 128, 1)">132</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">133</span> Node* bstree_predecessor(Node *<span style="color: rgba(0, 0, 0, 1)">x)
+</span><span style="color: rgba(0, 128, 128, 1)">134</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">135</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x存在左孩子，则"x的前驱结点"为 "以其左孩子为根的子树的最大结点"。</span>
+<span style="color: rgba(0, 128, 128, 1)">136</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (x-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">137</span>         <span style="color: rgba(0, 0, 255, 1)">return</span> bstree_maximum(x-&gt;<span style="color: rgba(0, 0, 0, 1)">left);
+</span><span style="color: rgba(0, 128, 128, 1)">138</span> 
+<span style="color: rgba(0, 128, 128, 1)">139</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果x没有左孩子。则x有以下两种可能：
+</span><span style="color: rgba(0, 128, 128, 1)">140</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (01) x是"一个右孩子"，则"x的前驱结点"为 "它的父结点"。
+</span><span style="color: rgba(0, 128, 128, 1)">141</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> (01) x是"一个左孩子"，则查找"x的最低的父结点，并且该父结点要具有右孩子"，找到的这个"最低的父结点"就是"x的前驱结点"。</span>
+<span style="color: rgba(0, 128, 128, 1)">142</span>     Node* y = x-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+</span><span style="color: rgba(0, 128, 128, 1)">143</span>     <span style="color: rgba(0, 0, 255, 1)">while</span> ((y!=NULL) &amp;&amp; (x==y-&gt;<span style="color: rgba(0, 0, 0, 1)">left))
+</span><span style="color: rgba(0, 128, 128, 1)">144</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">145</span>         x =<span style="color: rgba(0, 0, 0, 1)"> y;
+</span><span style="color: rgba(0, 128, 128, 1)">146</span>         y = y-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+</span><span style="color: rgba(0, 128, 128, 1)">147</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">148</span> 
+<span style="color: rgba(0, 128, 128, 1)">149</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> y;
+</span><span style="color: rgba(0, 128, 128, 1)">150</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">151</span> 
+<span style="color: rgba(0, 128, 128, 1)">152</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)">153</span> <span style="color: rgba(0, 128, 0, 1)"> * 创建并返回二叉树结点。
+</span><span style="color: rgba(0, 128, 128, 1)">154</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">155</span> <span style="color: rgba(0, 128, 0, 1)"> * 参数说明：
+</span><span style="color: rgba(0, 128, 128, 1)">156</span> <span style="color: rgba(0, 128, 0, 1)"> *     key 是键值。
+</span><span style="color: rgba(0, 128, 128, 1)">157</span> <span style="color: rgba(0, 128, 0, 1)"> *     parent 是父结点。
+</span><span style="color: rgba(0, 128, 128, 1)">158</span> <span style="color: rgba(0, 128, 0, 1)"> *     left 是左孩子。
+</span><span style="color: rgba(0, 128, 128, 1)">159</span> <span style="color: rgba(0, 128, 0, 1)"> *     right 是右孩子。
+</span><span style="color: rgba(0, 128, 128, 1)">160</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">161</span> <span style="color: rgba(0, 0, 255, 1)">static</span> Node* create_bstree_node(Type key, Node *parent, Node *left, Node*<span style="color: rgba(0, 0, 0, 1)"> right)
+</span><span style="color: rgba(0, 128, 128, 1)">162</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">163</span>     Node*<span style="color: rgba(0, 0, 0, 1)"> p;
+</span><span style="color: rgba(0, 128, 128, 1)">164</span> 
+<span style="color: rgba(0, 128, 128, 1)">165</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> ((p = (Node *)malloc(<span style="color: rgba(0, 0, 255, 1)">sizeof</span>(Node))) ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">166</span>         <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NULL;
+</span><span style="color: rgba(0, 128, 128, 1)">167</span>     p-&gt;key =<span style="color: rgba(0, 0, 0, 1)"> key;
+</span><span style="color: rgba(0, 128, 128, 1)">168</span>     p-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> left;
+</span><span style="color: rgba(0, 128, 128, 1)">169</span>     p-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> right;
+</span><span style="color: rgba(0, 128, 128, 1)">170</span>     p-&gt;parent =<span style="color: rgba(0, 0, 0, 1)"> parent;
+</span><span style="color: rgba(0, 128, 128, 1)">171</span> 
+<span style="color: rgba(0, 128, 128, 1)">172</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> p;
+</span><span style="color: rgba(0, 128, 128, 1)">173</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">174</span> 
+<span style="color: rgba(0, 128, 128, 1)">175</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)">176</span> <span style="color: rgba(0, 128, 0, 1)"> * 将结点插入到二叉树中
+</span><span style="color: rgba(0, 128, 128, 1)">177</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">178</span> <span style="color: rgba(0, 128, 0, 1)"> * 参数说明：
+</span><span style="color: rgba(0, 128, 128, 1)">179</span> <span style="color: rgba(0, 128, 0, 1)"> *     tree 二叉树的根结点
+</span><span style="color: rgba(0, 128, 128, 1)">180</span> <span style="color: rgba(0, 128, 0, 1)"> *     z 插入的结点
+</span><span style="color: rgba(0, 128, 128, 1)">181</span> <span style="color: rgba(0, 128, 0, 1)"> * 返回值：
+</span><span style="color: rgba(0, 128, 128, 1)">182</span> <span style="color: rgba(0, 128, 0, 1)"> *     根节点
+</span><span style="color: rgba(0, 128, 128, 1)">183</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">184</span> <span style="color: rgba(0, 0, 255, 1)">static</span> Node* bstree_insert(BSTree tree, Node *<span style="color: rgba(0, 0, 0, 1)">z)
+</span><span style="color: rgba(0, 128, 128, 1)">185</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">186</span>     Node *y =<span style="color: rgba(0, 0, 0, 1)"> NULL;
+</span><span style="color: rgba(0, 128, 128, 1)">187</span>     Node *x =<span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)">188</span> 
+<span style="color: rgba(0, 128, 128, 1)">189</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 查找z的插入位置</span>
+<span style="color: rgba(0, 128, 128, 1)">190</span>     <span style="color: rgba(0, 0, 255, 1)">while</span> (x !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">191</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">192</span>         y =<span style="color: rgba(0, 0, 0, 1)"> x;
+</span><span style="color: rgba(0, 128, 128, 1)">193</span>         <span style="color: rgba(0, 0, 255, 1)">if</span> (z-&gt;key &lt; x-&gt;<span style="color: rgba(0, 0, 0, 1)">key)
+</span><span style="color: rgba(0, 128, 128, 1)">194</span>             x = x-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+</span><span style="color: rgba(0, 128, 128, 1)">195</span>         <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)">196</span>             x = x-&gt;<span style="color: rgba(0, 0, 0, 1)">right;
+</span><span style="color: rgba(0, 128, 128, 1)">197</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">198</span> 
+<span style="color: rgba(0, 128, 128, 1)">199</span>     z-&gt;parent =<span style="color: rgba(0, 0, 0, 1)"> y;
+</span><span style="color: rgba(0, 128, 128, 1)">200</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (y==<span style="color: rgba(0, 0, 0, 1)">NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">201</span>         tree =<span style="color: rgba(0, 0, 0, 1)"> z;
+</span><span style="color: rgba(0, 128, 128, 1)">202</span>     <span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (z-&gt;key &lt; y-&gt;<span style="color: rgba(0, 0, 0, 1)">key)
+</span><span style="color: rgba(0, 128, 128, 1)">203</span>         y-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> z;
+</span><span style="color: rgba(0, 128, 128, 1)">204</span>     <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)">205</span>         y-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> z;
+</span><span style="color: rgba(0, 128, 128, 1)">206</span> 
+<span style="color: rgba(0, 128, 128, 1)">207</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)">208</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">209</span> 
+<span style="color: rgba(0, 128, 128, 1)">210</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)">211</span> <span style="color: rgba(0, 128, 0, 1)"> * 新建结点(key)，并将其插入到二叉树中
+</span><span style="color: rgba(0, 128, 128, 1)">212</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">213</span> <span style="color: rgba(0, 128, 0, 1)"> * 参数说明：
+</span><span style="color: rgba(0, 128, 128, 1)">214</span> <span style="color: rgba(0, 128, 0, 1)"> *     tree 二叉树的根结点
+</span><span style="color: rgba(0, 128, 128, 1)">215</span> <span style="color: rgba(0, 128, 0, 1)"> *     key 插入结点的键值
+</span><span style="color: rgba(0, 128, 128, 1)">216</span> <span style="color: rgba(0, 128, 0, 1)"> * 返回值：
+</span><span style="color: rgba(0, 128, 128, 1)">217</span> <span style="color: rgba(0, 128, 0, 1)"> *     根节点
+</span><span style="color: rgba(0, 128, 128, 1)">218</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">219</span> Node*<span style="color: rgba(0, 0, 0, 1)"> insert_bstree(BSTree tree, Type key)
+</span><span style="color: rgba(0, 128, 128, 1)">220</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">221</span>     Node *z;    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 新建结点
+</span><span style="color: rgba(0, 128, 128, 1)">222</span> 
+<span style="color: rgba(0, 128, 128, 1)">223</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 如果新建结点失败，则返回。</span>
+<span style="color: rgba(0, 128, 128, 1)">224</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> ((z=create_bstree_node(key, NULL, NULL, NULL)) ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">225</span>         <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)">226</span> 
+<span style="color: rgba(0, 128, 128, 1)">227</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> bstree_insert(tree, z);
+</span><span style="color: rgba(0, 128, 128, 1)">228</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">229</span> 
+<span style="color: rgba(0, 128, 128, 1)">230</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)">231</span> <span style="color: rgba(0, 128, 0, 1)"> * 删除结点(z)，并返回根节点
+</span><span style="color: rgba(0, 128, 128, 1)">232</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">233</span> <span style="color: rgba(0, 128, 0, 1)"> * 参数说明：
+</span><span style="color: rgba(0, 128, 128, 1)">234</span> <span style="color: rgba(0, 128, 0, 1)"> *     tree 二叉树的根结点
+</span><span style="color: rgba(0, 128, 128, 1)">235</span> <span style="color: rgba(0, 128, 0, 1)"> *     z 删除的结点
+</span><span style="color: rgba(0, 128, 128, 1)">236</span> <span style="color: rgba(0, 128, 0, 1)"> * 返回值：
+</span><span style="color: rgba(0, 128, 128, 1)">237</span> <span style="color: rgba(0, 128, 0, 1)"> *     根节点
+</span><span style="color: rgba(0, 128, 128, 1)">238</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">239</span> <span style="color: rgba(0, 0, 255, 1)">static</span> Node* bstree_delete(BSTree tree, Node *<span style="color: rgba(0, 0, 0, 1)">z)
+</span><span style="color: rgba(0, 128, 128, 1)">240</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">241</span>     Node *x=<span style="color: rgba(0, 0, 0, 1)">NULL;
+</span><span style="color: rgba(0, 128, 128, 1)">242</span>     Node *y=<span style="color: rgba(0, 0, 0, 1)">NULL;
+</span><span style="color: rgba(0, 128, 128, 1)">243</span> 
+<span style="color: rgba(0, 128, 128, 1)">244</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> ((z-&gt;left == NULL) || (z-&gt;right ==<span style="color: rgba(0, 0, 0, 1)"> NULL) )
+</span><span style="color: rgba(0, 128, 128, 1)">245</span>         y =<span style="color: rgba(0, 0, 0, 1)"> z;
+</span><span style="color: rgba(0, 128, 128, 1)">246</span>     <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)">247</span>         y =<span style="color: rgba(0, 0, 0, 1)"> bstree_successor(z);
+</span><span style="color: rgba(0, 128, 128, 1)">248</span> 
+<span style="color: rgba(0, 128, 128, 1)">249</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (y-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">250</span>         x = y-&gt;<span style="color: rgba(0, 0, 0, 1)">left;
+</span><span style="color: rgba(0, 128, 128, 1)">251</span>     <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)">252</span>         x = y-&gt;<span style="color: rgba(0, 0, 0, 1)">right;
+</span><span style="color: rgba(0, 128, 128, 1)">253</span> 
+<span style="color: rgba(0, 128, 128, 1)">254</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (x !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">255</span>         x-&gt;parent = y-&gt;<span style="color: rgba(0, 0, 0, 1)">parent;
+</span><span style="color: rgba(0, 128, 128, 1)">256</span> 
+<span style="color: rgba(0, 128, 128, 1)">257</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (y-&gt;parent ==<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">258</span>         tree =<span style="color: rgba(0, 0, 0, 1)"> x;
+</span><span style="color: rgba(0, 128, 128, 1)">259</span>     <span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (y == y-&gt;parent-&gt;<span style="color: rgba(0, 0, 0, 1)">left)
+</span><span style="color: rgba(0, 128, 128, 1)">260</span>         y-&gt;parent-&gt;left =<span style="color: rgba(0, 0, 0, 1)"> x;
+</span><span style="color: rgba(0, 128, 128, 1)">261</span>     <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)">262</span>         y-&gt;parent-&gt;right =<span style="color: rgba(0, 0, 0, 1)"> x;
+</span><span style="color: rgba(0, 128, 128, 1)">263</span> 
+<span style="color: rgba(0, 128, 128, 1)">264</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (y !=<span style="color: rgba(0, 0, 0, 1)"> z) 
+</span><span style="color: rgba(0, 128, 128, 1)">265</span>         z-&gt;key = y-&gt;<span style="color: rgba(0, 0, 0, 1)">key;
+</span><span style="color: rgba(0, 128, 128, 1)">266</span> 
+<span style="color: rgba(0, 128, 128, 1)">267</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (y!=<span style="color: rgba(0, 0, 0, 1)">NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">268</span> <span style="color: rgba(0, 0, 0, 1)">        free(y);
+</span><span style="color: rgba(0, 128, 128, 1)">269</span> 
+<span style="color: rgba(0, 128, 128, 1)">270</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)">271</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">272</span> 
+<span style="color: rgba(0, 128, 128, 1)">273</span> <span style="color: rgba(0, 128, 0, 1)">/*</span> 
+<span style="color: rgba(0, 128, 128, 1)">274</span> <span style="color: rgba(0, 128, 0, 1)"> * 删除结点(key为节点的键值)，并返回根节点
+</span><span style="color: rgba(0, 128, 128, 1)">275</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">276</span> <span style="color: rgba(0, 128, 0, 1)"> * 参数说明：
+</span><span style="color: rgba(0, 128, 128, 1)">277</span> <span style="color: rgba(0, 128, 0, 1)"> *     tree 二叉树的根结点
+</span><span style="color: rgba(0, 128, 128, 1)">278</span> <span style="color: rgba(0, 128, 0, 1)"> *     z 删除的结点
+</span><span style="color: rgba(0, 128, 128, 1)">279</span> <span style="color: rgba(0, 128, 0, 1)"> * 返回值：
+</span><span style="color: rgba(0, 128, 128, 1)">280</span> <span style="color: rgba(0, 128, 0, 1)"> *     根节点
+</span><span style="color: rgba(0, 128, 128, 1)">281</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">282</span> Node*<span style="color: rgba(0, 0, 0, 1)"> delete_bstree(BSTree tree, Type key)
+</span><span style="color: rgba(0, 128, 128, 1)">283</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">284</span>     Node *z, *<span style="color: rgba(0, 0, 0, 1)">node; 
+</span><span style="color: rgba(0, 128, 128, 1)">285</span> 
+<span style="color: rgba(0, 128, 128, 1)">286</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> ((z = bstree_search(tree, key)) !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">287</span>         tree =<span style="color: rgba(0, 0, 0, 1)"> bstree_delete(tree, z);
+</span><span style="color: rgba(0, 128, 128, 1)">288</span> 
+<span style="color: rgba(0, 128, 128, 1)">289</span>     <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> tree;
+</span><span style="color: rgba(0, 128, 128, 1)">290</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">291</span> 
+<span style="color: rgba(0, 128, 128, 1)">292</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)">293</span> <span style="color: rgba(0, 128, 0, 1)"> * 销毁二叉树
+</span><span style="color: rgba(0, 128, 128, 1)">294</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">295</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> destroy_bstree(BSTree tree)
+</span><span style="color: rgba(0, 128, 128, 1)">296</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">297</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (tree==<span style="color: rgba(0, 0, 0, 1)">NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">298</span>         <span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> ;
+</span><span style="color: rgba(0, 128, 128, 1)">299</span> 
+<span style="color: rgba(0, 128, 128, 1)">300</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (tree-&gt;left !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">301</span>         destroy_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">left);
+</span><span style="color: rgba(0, 128, 128, 1)">302</span>     <span style="color: rgba(0, 0, 255, 1)">if</span> (tree-&gt;right !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">303</span>         destroy_bstree(tree-&gt;<span style="color: rgba(0, 0, 0, 1)">right);
+</span><span style="color: rgba(0, 128, 128, 1)">304</span> 
+<span style="color: rgba(0, 128, 128, 1)">305</span> <span style="color: rgba(0, 0, 0, 1)">    free(tree);
+</span><span style="color: rgba(0, 128, 128, 1)">306</span> <span style="color: rgba(0, 0, 0, 1)">}
+</span><span style="color: rgba(0, 128, 128, 1)">307</span> 
+<span style="color: rgba(0, 128, 128, 1)">308</span> <span style="color: rgba(0, 128, 0, 1)">/*</span>
+<span style="color: rgba(0, 128, 128, 1)">309</span> <span style="color: rgba(0, 128, 0, 1)"> * 打印"二叉树"
+</span><span style="color: rgba(0, 128, 128, 1)">310</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)">311</span> <span style="color: rgba(0, 128, 0, 1)"> * tree       -- 二叉树的节点
+</span><span style="color: rgba(0, 128, 128, 1)">312</span> <span style="color: rgba(0, 128, 0, 1)"> * key        -- 节点的键值 
+</span><span style="color: rgba(0, 128, 128, 1)">313</span> <span style="color: rgba(0, 128, 0, 1)"> * direction  --  0，表示该节点是根节点;
+</span><span style="color: rgba(0, 128, 128, 1)">314</span> <span style="color: rgba(0, 128, 0, 1)"> *               -1，表示该节点是它的父结点的左孩子;
+</span><span style="color: rgba(0, 128, 128, 1)">315</span> <span style="color: rgba(0, 128, 0, 1)"> *                1，表示该节点是它的父结点的右孩子。
+</span><span style="color: rgba(0, 128, 128, 1)">316</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)">317</span> <span style="color: rgba(0, 0, 255, 1)">void</span> print_bstree(BSTree tree, Type key, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> direction)
+</span><span style="color: rgba(0, 128, 128, 1)">318</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">319</span>     <span style="color: rgba(0, 0, 255, 1)">if</span>(tree !=<span style="color: rgba(0, 0, 0, 1)"> NULL)
+</span><span style="color: rgba(0, 128, 128, 1)">320</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">321</span>         <span style="color: rgba(0, 0, 255, 1)">if</span>(direction==<span style="color: rgba(128, 0, 128, 1)">0</span>)    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> tree是根节点</span>
+<span style="color: rgba(0, 128, 128, 1)">322</span>             printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%2d is root\n</span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+</span><span style="color: rgba(0, 128, 128, 1)">323</span>         <span style="color: rgba(0, 0, 255, 1)">else</span>                <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> tree是分支节点</span>
+<span style="color: rgba(0, 128, 128, 1)">324</span>             printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%2d is %2d's %6s child\n</span><span style="color: rgba(128, 0, 0, 1)">"</span>, tree-&gt;key, key, direction==<span style="color: rgba(128, 0, 128, 1)">1</span>?<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">right</span><span style="color: rgba(128, 0, 0, 1)">"</span> : <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">left</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">325</span> 
+<span style="color: rgba(0, 128, 128, 1)">326</span>         print_bstree(tree-&gt;left, tree-&gt;key, -<span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">327</span>         print_bstree(tree-&gt;right,tree-&gt;key,  <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">328</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">329</span> }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div><span class="cnblogs_code_collapse" style="display: none;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">View Code</font></font></span></div>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">二叉查找树的测试程序(</span><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">btree_test.c)</span></p>
+<div class="cnblogs_code"><img id="code_img_closed_e8cbe1da-9302-4e40-b8ab-2255d76121ed" class="code_img_closed" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/ContractedBlock.gif" alt="" style="display: none;"><img id="code_img_opened_e8cbe1da-9302-4e40-b8ab-2255d76121ed" class="code_img_opened" style="" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/ExpandedBlockStart.gif" alt=""><div id="cnblogs_code_open_e8cbe1da-9302-4e40-b8ab-2255d76121ed" class="cnblogs_code_hide" style="display: block;"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 128, 0, 1)">/*</span><span style="color: rgba(0, 128, 0, 1)">*
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 128, 0, 1)"> * C 语言: 二叉查找树
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span> <span style="color: rgba(0, 128, 0, 1)"> *
+</span><span style="color: rgba(0, 128, 128, 1)"> 4</span> <span style="color: rgba(0, 128, 0, 1)"> * @author skywang
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span> <span style="color: rgba(0, 128, 0, 1)"> * @date 2013/11/07
+</span><span style="color: rgba(0, 128, 128, 1)"> 6</span>  <span style="color: rgba(0, 128, 0, 1)">*/</span>
+<span style="color: rgba(0, 128, 128, 1)"> 7</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 8</span> #include &lt;stdio.h&gt;
+<span style="color: rgba(0, 128, 128, 1)"> 9</span> #include <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">bstree.h</span><span style="color: rgba(128, 0, 0, 1)">"</span>
+<span style="color: rgba(0, 128, 128, 1)">10</span> 
+<span style="color: rgba(0, 128, 128, 1)">11</span> <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">int</span> arr[]= {<span style="color: rgba(128, 0, 128, 1)">1</span>,<span style="color: rgba(128, 0, 128, 1)">5</span>,<span style="color: rgba(128, 0, 128, 1)">4</span>,<span style="color: rgba(128, 0, 128, 1)">3</span>,<span style="color: rgba(128, 0, 128, 1)">2</span>,<span style="color: rgba(128, 0, 128, 1)">6</span><span style="color: rgba(0, 0, 0, 1)">};
+</span><span style="color: rgba(0, 128, 128, 1)">12</span> <span style="color: rgba(0, 0, 255, 1)">#define</span> TBL_SIZE(a) ( (sizeof(a)) / (sizeof(a[0])) )
+<span style="color: rgba(0, 128, 128, 1)">13</span> 
+<span style="color: rgba(0, 128, 128, 1)">14</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> main()
+</span><span style="color: rgba(0, 128, 128, 1)">15</span> <span style="color: rgba(0, 0, 0, 1)">{
+</span><span style="color: rgba(0, 128, 128, 1)">16</span>     <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> i, ilen;
+</span><span style="color: rgba(0, 128, 128, 1)">17</span>     BSTree root=<span style="color: rgba(0, 0, 0, 1)">NULL;
+</span><span style="color: rgba(0, 128, 128, 1)">18</span> 
+<span style="color: rgba(0, 128, 128, 1)">19</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">== 依次添加: </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">20</span>     ilen =<span style="color: rgba(0, 0, 0, 1)"> TBL_SIZE(arr);
+</span><span style="color: rgba(0, 128, 128, 1)">21</span>     <span style="color: rgba(0, 0, 255, 1)">for</span>(i=<span style="color: rgba(128, 0, 128, 1)">0</span>; i&lt;ilen; i++<span style="color: rgba(0, 0, 0, 1)">)
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)">23</span>         printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">%d </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">, arr[i]);
+</span><span style="color: rgba(0, 128, 128, 1)">24</span>         root =<span style="color: rgba(0, 0, 0, 1)"> insert_bstree(root, arr[i]);
+</span><span style="color: rgba(0, 128, 128, 1)">25</span> <span style="color: rgba(0, 0, 0, 1)">    }
+</span><span style="color: rgba(0, 128, 128, 1)">26</span> 
+<span style="color: rgba(0, 128, 128, 1)">27</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n== 前序遍历: </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">28</span> <span style="color: rgba(0, 0, 0, 1)">    preorder_bstree(root);
+</span><span style="color: rgba(0, 128, 128, 1)">29</span> 
+<span style="color: rgba(0, 128, 128, 1)">30</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n== 中序遍历: </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">31</span> <span style="color: rgba(0, 0, 0, 1)">    inorder_bstree(root);
+</span><span style="color: rgba(0, 128, 128, 1)">32</span> 
+<span style="color: rgba(0, 128, 128, 1)">33</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n== 后序遍历: </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">34</span> <span style="color: rgba(0, 0, 0, 1)">    postorder_bstree(root);
+</span><span style="color: rgba(0, 128, 128, 1)">35</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">36</span> 
+<span style="color: rgba(0, 128, 128, 1)">37</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">== 最小值: %d\n</span><span style="color: rgba(128, 0, 0, 1)">"</span>, bstree_minimum(root)-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+</span><span style="color: rgba(0, 128, 128, 1)">38</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">== 最大值: %d\n</span><span style="color: rgba(128, 0, 0, 1)">"</span>, bstree_maximum(root)-&gt;<span style="color: rgba(0, 0, 0, 1)">key);
+</span><span style="color: rgba(0, 128, 128, 1)">39</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">== 树的详细信息: \n</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">40</span>     print_bstree(root, root-&gt;key, <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">41</span> 
+<span style="color: rgba(0, 128, 128, 1)">42</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n== 删除根节点: %d</span><span style="color: rgba(128, 0, 0, 1)">"</span>, arr[<span style="color: rgba(128, 0, 128, 1)">3</span><span style="color: rgba(0, 0, 0, 1)">]);
+</span><span style="color: rgba(0, 128, 128, 1)">43</span>     root = delete_bstree(root, arr[<span style="color: rgba(128, 0, 128, 1)">3</span><span style="color: rgba(0, 0, 0, 1)">]);
+</span><span style="color: rgba(0, 128, 128, 1)">44</span> 
+<span style="color: rgba(0, 128, 128, 1)">45</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n== 中序遍历: </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">46</span> <span style="color: rgba(0, 0, 0, 1)">    inorder_bstree(root);
+</span><span style="color: rgba(0, 128, 128, 1)">47</span>     printf(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">\n</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">48</span> 
+<span style="color: rgba(0, 128, 128, 1)">49</span>     <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 销毁二叉树</span>
+<span style="color: rgba(0, 128, 128, 1)">50</span> <span style="color: rgba(0, 0, 0, 1)">    destroy_bstree(root);
+</span><span style="color: rgba(0, 128, 128, 1)">51</span> }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div><span class="cnblogs_code_collapse" style="display: none;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">View Code</font></font></span></div>
+<p>&nbsp;</p>
+<h3><span style="font-family: 黑体; font-size: 18pt; line-height: 1.5; color: rgba(0, 0, 0, 1)"><a name="a4"></a>二叉查找树的C测试程序</span></h3>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">上面的btree_test.c是二叉查找树的测试程序，它的运行结果如下：</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div>
+<pre>== 依次添加: <span style="color: rgba(128, 0, 128, 1)">1</span> <span style="color: rgba(128, 0, 128, 1)">5</span> <span style="color: rgba(128, 0, 128, 1)">4</span> <span style="color: rgba(128, 0, 128, 1)">3</span> <span style="color: rgba(128, 0, 128, 1)">2</span> <span style="color: rgba(128, 0, 128, 1)">6</span> 
+== 前序遍历: <span style="color: rgba(128, 0, 128, 1)">1</span> <span style="color: rgba(128, 0, 128, 1)">5</span> <span style="color: rgba(128, 0, 128, 1)">4</span> <span style="color: rgba(128, 0, 128, 1)">3</span> <span style="color: rgba(128, 0, 128, 1)">2</span> <span style="color: rgba(128, 0, 128, 1)">6</span> 
+== 中序遍历: <span style="color: rgba(128, 0, 128, 1)">1</span> <span style="color: rgba(128, 0, 128, 1)">2</span> <span style="color: rgba(128, 0, 128, 1)">3</span> <span style="color: rgba(128, 0, 128, 1)">4</span> <span style="color: rgba(128, 0, 128, 1)">5</span> <span style="color: rgba(128, 0, 128, 1)">6</span> 
+== 后序遍历: <span style="color: rgba(128, 0, 128, 1)">2</span> <span style="color: rgba(128, 0, 128, 1)">3</span> <span style="color: rgba(128, 0, 128, 1)">4</span> <span style="color: rgba(128, 0, 128, 1)">6</span> <span style="color: rgba(128, 0, 128, 1)">5</span> <span style="color: rgba(128, 0, 128, 1)">1</span> 
+== 最小值: <span style="color: rgba(128, 0, 128, 1)">1</span>
+== 最大值: <span style="color: rgba(128, 0, 128, 1)">6</span>
+==<span style="color: rgba(0, 0, 0, 1)"> 树的详细信息: 
+ </span><span style="color: rgba(128, 0, 128, 1)">1</span> <span style="color: rgba(0, 0, 255, 1)">is</span><span style="color: rgba(0, 0, 0, 1)"> root
+ </span><span style="color: rgba(128, 0, 128, 1)">5</span> <span style="color: rgba(0, 0, 255, 1)">is</span>  <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">s  right child</span>
+ <span style="color: rgba(128, 0, 128, 1)">4</span> <span style="color: rgba(0, 0, 255, 1)">is</span>  <span style="color: rgba(128, 0, 128, 1)">5</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">s   left child</span>
+ <span style="color: rgba(128, 0, 128, 1)">3</span> <span style="color: rgba(0, 0, 255, 1)">is</span>  <span style="color: rgba(128, 0, 128, 1)">4</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">s   left child</span>
+ <span style="color: rgba(128, 0, 128, 1)">2</span> <span style="color: rgba(0, 0, 255, 1)">is</span>  <span style="color: rgba(128, 0, 128, 1)">3</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">s   left child</span>
+ <span style="color: rgba(128, 0, 128, 1)">6</span> <span style="color: rgba(0, 0, 255, 1)">is</span>  <span style="color: rgba(128, 0, 128, 1)">5</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">s  right child</span><font></font>
+<font></font>
+== 删除根节点: <span style="color: rgba(128, 0, 128, 1)">3</span>
+== 中序遍历: <span style="color: rgba(128, 0, 128, 1)">1</span> <span style="color: rgba(128, 0, 128, 1)">2</span> <span style="color: rgba(128, 0, 128, 1)">4</span> <span style="color: rgba(128, 0, 128, 1)">5</span> <span style="color: rgba(128, 0, 128, 1)">6</span> </pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="複製代碼"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/copycode.gif" alt="複製代碼"></a></span></div></div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">下面对测试程序的流程进行分析！</span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(01) 新建"二叉查找树"root。</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(02) 向二叉查找树中依次插入<span style="color: rgba(0, 128, 0, 1)">1,5,4,3,2,6</span> 。如下图所示：</span><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><br></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270934029682785.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270934029682785.jpg" alt="" width="800" height="178"></a></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(03) 打印树的信息</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">插入1,5,4,3,2,6之后，得到的二叉查找树如下：</span><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><br></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270934310934692.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270934310934692.jpg" alt="" width="250" height="312"></a></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">前序遍历结果: <span style="color: rgba(0, 128, 0, 1)">1 5 4 3 2 6</span> </span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">中序遍历结果: <span style="color: rgba(0, 128, 0, 1)">1 2 3 4 5 6</span> </span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">后序遍历结果: <span style="color: rgba(0, 128, 0, 1)">2 3 4 6 5 1</span> </span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">最小值是1，而最大值是6。</span></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(04) 删除节点3。如下图所示：</span><span style="font-size: 16px; color: rgba(0, 0, 0, 1)"><br></span></p>
+<p><a href="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270935030931183.jpg"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/270935030931183.jpg" alt="" width="500" height="265"></a></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">(05) 重新遍历该二叉查找树。</span><br><span style="font-size: 16px; color: rgba(0, 0, 0, 1)">中序遍历结果: <span style="color: rgba(0, 128, 0, 1)">1 2 4 5 6</span></span></p>
+<p>&nbsp;</p>
+</div>
+<div id="MySignature" style="display: block;"><table><tbody><tr><td><img style="width: 80px; height:80px;" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/t_f1.jpg" alt="img"></td><td style="FONT-WEIGHT: normal; FONT-SIZE: 14pt; LINE-HEIGHT: 100%; FONT-STYLE: normal; FONT-VARIANT: normal; color:#FF0000"><font style="LINE-HEIGHT: 250%; FONT-SIZE:14pt; color:#610B21">生活的悲欢离合永远在地平线以外，而眺望是一种青春的姿态...</font><br>PS.文章是笔者分享的学习笔记，若你觉得可以、还行、过得去、甚至不太差的话，可以“推荐”一下的哦。就此谢过!</td></tr></tbody></table></div>
+<div class="clear"></div>
+<div id="blog_post_info_block"><div id="BlogPostCategory">
+    分类: 
+            <a href="https://www.cnblogs.com/skywang12345/category/508186.html" target="_blank">数据结构_算法</a></div>
+<div id="EntryTag">
+    标签: 
+            <a href="https://www.cnblogs.com/skywang12345/tag/%E5%AE%9E%E7%8E%B0/">实现</a>,             <a href="https://www.cnblogs.com/skywang12345/tag/C%E8%AF%AD%E8%A8%80/">C语言</a>,             <a href="https://www.cnblogs.com/skywang12345/tag/%E5%9B%BE%E8%A7%A3/">图解</a>,             <a href="https://www.cnblogs.com/skywang12345/tag/%E4%BA%8C%E5%8F%89%E6%A0%91/">二叉树</a>,             <a href="https://www.cnblogs.com/skywang12345/tag/%E4%BA%8C%E5%8F%89%E6%9F%A5%E6%89%BE%E6%A0%91/">二叉查找树</a></div>
+
+    <div id="blog_post_info">
+<div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(3576328,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+        <a id="green_channel_follow" onclick="follow(&#39;529b107b-d87b-e211-aa8f-842b2b196315&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/skywang12345/" target="_blank"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/20131015182802.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/skywang12345/">如果天空不死</a><br>
+            <a href="https://home.cnblogs.com/u/skywang12345/followees/">关注 - 9</a><br>
+            <a href="https://home.cnblogs.com/u/skywang12345/followers/">粉丝 - 3371</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;529b107b-d87b-e211-aa8f-842b2b196315&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(3576328,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">33</span>
+    </div>
+    <div class="buryit" onclick="votePost(3576328,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+    <div class="clear"></div>
+    <div id="post_next_prev">
+
+    <a href="https://www.cnblogs.com/skywang12345/p/3562279.html" class="p_n_p_prefix">« </a> 上一篇：    <a href="https://www.cnblogs.com/skywang12345/p/3562279.html" title="發佈於2014-03-26 09:26">队列的图文解析 和 对应3种语言的实现(C/C++/Java)</a>
+    <br>
+    <a href="https://www.cnblogs.com/skywang12345/p/3576373.html" class="p_n_p_prefix">» </a> 下一篇：    <a href="https://www.cnblogs.com/skywang12345/p/3576373.html" title="發佈於2014-03-27 18:41">二叉查找树(二)之 C++的实现</a>
+
+</div>
+</div>
+        </div>
+        <div class="itemdesc">
+            posted on 
+<span id="post-date">2014-03-27 09:43</span>&nbsp;
+<a href="https://www.cnblogs.com/skywang12345/">如果天空不死</a>&nbsp;
+阅读(<span id="post_view_count">57142</span>)&nbsp;
+评论(<span id="post_comment_count">22</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=3576328" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(3576328);return false;">收藏</a>
+        </div>
+    </div>
+</div>
+
+
+<script src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/highlight.min.js.下載"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 142383, cb_blogApp = 'skywang12345', cb_blogUserGuid = '529b107b-d87b-e211-aa8f-842b2b196315';
+    var cb_entryId = 3576328, cb_entryCreatedDate = '2014-03-27 09:43', cb_postType = 1;
+    updatePostStats(
+        [cb_entryId],
+        function(id, count) { $("#post_view_count").text(count) },
+        function(id, count) { $("#post_comment_count").text(count) })
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");
+</script>
+<a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/skywang12345/p/3576328.html#top">返回顶部</a></div>
+    <div id="comment_form_container" style="visibility: visible;"><div class="login_tips">
+    登录后才能查看或发表评论，立即 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return account.login(&#39;!comments&#39;);">登录</a> 或者
+    <a href="https://www.cnblogs.com/">逛逛</a> 博客园首页
+</div>
+</div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"><a href="https://www.cnblogs.com/cmt/p/14797594.html" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-阿里云-2021峰会&#39;)">【推荐】云上创新 2021阿里云峰会免费抢票，期待您的到来！</a><br><a href="http://www.uccpsoft.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-ucancode&#39;)">【推荐】大型组态、工控、仿真、CAD\GIS 50万行VC++源码免费下载!</a><br><a href="https://brands.cnblogs.com/huawei" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-华为专区&#39;)">【推荐】100个HarmonyOS 2.0开发者Beta公测名额，限时认领！</a><br><a href="https://www.aliyun.com/activity/daily/bestoffer?userCode=swh7dvlt" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-阿里云-cps&#39;)">【推荐】阿里云爆品销量榜单出炉，精选爆款产品低至0.55折</a><br><a href="http://www.moojnn.com/?source=bokeyuan" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-魔镜&#39;)">【推荐】限时秒杀！国云大数据魔镜，企业级云分析平台</a><br></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="under-post-card">
+        <div id="div-gpt-ad-1592365906576-0" style="width: 300px; height: 250px;" data-google-query-id="COHlmLef5vACFVAVYAod1zUFfg"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" allow="conversion-measurement &#39;src&#39;" data-google-container-id="1" style="border: 0px; vertical-align: bottom;" data-load-complete="true" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/saved_resource.html"></iframe></div></div>
+    </div>
+    <div id="under_post_card1"><div class="under-post-card"><b>园子动态</b>：<br>· <a href="https://www.cnblogs.com/cmt/p/14585828.html" target="_blank">致园友们的一封检讨书：都是我们的错</a><br>· <a href="https://www.cnblogs.com/cmt/p/14595262.html" target="_blank">数据库实例 CPU 100% 引发全站故障</a><br>· <a href="https://www.cnblogs.com/cmt/p/14217355.html" target="_blank">发起一个开源项目：博客引擎 fluss</a><br></div></div>
+    <div id="cnblogs_c2" class="under-post-card">
+        <div id="div-gpt-ad-1592366332455-0" style="width: 468px; height: 60px;" data-google-query-id="COLlmLef5vACFVAVYAod1zUFfg"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" width="468" height="60" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" allow="conversion-measurement &#39;src&#39;" data-google-container-id="2" style="border: 0px; vertical-align: bottom;" data-load-complete="true" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/saved_resource(1).html"></iframe></div></div>
+    </div>
+    <div id="under_post_card2"><div class="itnews under-post-card">
+    <b>最新新闻</b>：
+    <br>
+ ·          <a href="https://news.cnblogs.com/n/694630/" target="_blank">美国对亚马逊发起反垄断诉讼：阻止第三方低价出售商品</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/694629/" target="_blank">在这个豆瓣小组里 有20万人能帮你决定午饭吃什么</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/694628/" target="_blank">三巨头3nm、2nm大乱斗！Intel：我在哪儿？</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/694627/" target="_blank">暴雪免费大作《暗黑破坏神：不朽》国服将开测：你期待吗？</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/694626/" target="_blank">超级红月亮观赏攻略：5月26日现身、我国绝大多数地区肉眼可见</a>
+        <br>
+    » <a href="https://news.cnblogs.com/" title="IT 新聞" target="_blank">更多新闻...</a>
+</div></div>
+    <div id="HistoryToday" class="under-post-card"></div>
+    <script type="text/javascript">
+       var commentManager = new blogCommentManager();
+       commentManager.renderComments(0);
+       fixPostBody();
+       deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);       deliverT2();
+       deliverC1C2();
+       loadNewsAndKb();
+       loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);       LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+       GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+       loadOptUnderPost();
+       GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+
+
+
+        <div class="spacer">
+            &nbsp;</div>
+    </div>
+    <div class="footer"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+	Powered by: 
+	</font></font><br>
+	
+	<a href="https://www.cnblogs.com/" id="footer_site_link"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">博客園</font></font></a>
+	<br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+	Copyright © 2021如果天空不死
+</font></font><br><span id="poweredby"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Powered by .NET 5.0 on Kubernetes</font></font></span>
+
+</div>
+
+
+</div>
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8L-rpLgFVEJMgssCVvNUAjvoG5VsWcGXj2_DbU1AjGeSJ4Gi2IR_m10MjEpk8BekiDjVx9yYYE3Vpppf4ncGa2IxDyfo5i4wqEozjVm34_gYJ__JxdLvFb3rbmbRuzYxN2qsewJsK-LqzgbYmWnU6ko">
+
+
+<iframe id="google_osd_static_frame_2164989768739" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;" src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/saved_resource(2).html"></iframe><div id="goog-gt-tt" class="skiptranslate" dir="ltr"><div style="padding: 8px;"><div><div class="logo"><img src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/translate_24dp.png" width="20" height="20" alt="Google 翻譯"></div></div></div><div class="top" style="padding: 8px; float: left; width: 100%;"><h1 class="title gray">原文</h1></div><div class="middle" style="padding: 8px;"><div class="original-text"></div></div><div class="bottom" style="padding: 8px;"><div class="activity-links"><span class="activity-link">建議更好的譯法</span><span class="activity-link"></span></div><div class="started-activity-container"><hr style="color: #CCC; background-color: #CCC; height: 1px; border: none;"><div class="activity-root"></div></div></div><div class="status-message" style="display: none;"></div></div><iframe src="./二叉查找樹(一)之圖文解析和C語言的實現- 如果天空不死- 博客園_files/aframe.html" width="0" height="0" style="display: none;"></iframe><div class="goog-te-spinner-pos"><div class="goog-te-spinner-animation"><svg xmlns="http://www.w3.org/2000/svg" class="goog-te-spinner" width="96px" height="96px" viewBox="0 0 66 66"><circle class="goog-te-spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div></body></html>

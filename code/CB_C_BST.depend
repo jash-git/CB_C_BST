@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1621994606 source:c:\users\jashliao\desktop\cb_c_bst\bst.c
+	<stdio.h>
+	<stdlib.h>
+	"BST.h"
+
+1621994476 c:\users\jashliao\desktop\cb_c_bst\bst.h
+
+1621994700 source:c:\users\jashliao\desktop\cb_c_bst\main.c
+	<stdio.h>
+	<stdlib.h>
+	"BST.h"
+
